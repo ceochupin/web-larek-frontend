@@ -9,7 +9,6 @@ export interface ICard {
 
 export interface IBasket {
   items: TCardBasket[];
-  total: number | null;
 }
 
 export interface IOrder {

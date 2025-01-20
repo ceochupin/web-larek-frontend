@@ -59,7 +59,6 @@ export interface ICard {
 ```ts
 export interface IBasket {
   items: TCardBasket[];
-  total: number | null;
 }
 ```
 
