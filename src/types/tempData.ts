@@ -1,6 +1,6 @@
-import { ICard, IOrder } from "./index";
+import { IProduct } from "../components/ProductsData";
 
-export const testCardsData: ICard[] = [
+export const testCardsData: IProduct[] = [
   {
     "id": "854cef69-976d-4c2a-a18c-2aa45046c390",
     "description": "Если планируете решать задачи в тренажёре, берите два.",
@@ -83,14 +83,14 @@ export const testCardsData: ICard[] = [
   }
 ]
 
-export const order: IOrder = {
-  "payment": "online",
-  "email": "test@test.ru",
-  "phone": "+71234567890",
-  "address": "Spb Vosstania 1",
-  "total": 2200,
-  "items": [
-    "854cef69-976d-4c2a-a18c-2aa45046c390",
-    "c101ab44-ed99-4a54-990d-47aa2bb4e7d9"
-  ]
-}
+// export const order: IOrder = {
+//   "payment": "online",
+//   "email": "test@test.ru",
+//   "phone": "+71234567890",
+//   "address": "Spb Vosstania 1",
+//   "total": 2200,
+//   "items": [
+//     "854cef69-976d-4c2a-a18c-2aa45046c390",
+//     "c101ab44-ed99-4a54-990d-47aa2bb4e7d9"
+//   ]
+// }
