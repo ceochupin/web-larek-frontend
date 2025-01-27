@@ -1,47 +1,41 @@
-// export interface ICard {
-//   id: string;
-//   description: string;
-//   image: string;
-//   title: string;
-//   category: string;
-//   price: number | null;
-// }
+// Интерфейс одной карточки продукта
+export interface IProduct {
+  id: string;
+  description: string;
+  image: string;
+  title: string;
+  category: string;
+  price: number | null;
+}
 
-// export interface IBasket {
-//   items: TCardBasket[];
-// }
+// Интерфейс модели данных списка всех карточек продуктов
+export interface IProductsData {
+  setProductsAll: (data: IProduct[]) => void;
+  getProductsAll: () => IProduct[];
+  getProduct: (id: string) => IProduct;
+  validatePriceProduct: (id: string) => boolean;
+}
 
-// export interface IOrder {
-//   payment: TPaymentMethod;
-//   email: string;
-//   phone: string;
-//   address: string;
-//   total: number;
-//   items: string[];
-// }
+// Интерфейс модели данных корзины
+export interface IBasketData {
+  addProductInBasket: (product: IProduct) => void;
+  getProductsAllInBasket: () => IProduct[];
+  getCountProductsInBasket: () => number;
+  checkProductInBasket: (id: string) => boolean;
+  removeProductInBasket: (id: string) => void;
+  getTotalPriceProductsInBasket: () => number;
+  clearBasket: () => void;
+}
 
-// export interface IOrderSuccess {
-//   id: string;
-//   total: number;
-// }
-
-// export interface ICardsData {
-//   items: ICard[];
-//   preveiw: string | null;
-//   getCard(): ICard;
-//   getCardList(): ICard[];
-// }
-
-// export type TCardItem = Omit<ICard, 'description'>;
-// export type TCardDetail = Omit<ICard, 'id'>;
-// export type TCardBasket = Pick<ICard, 'title' | 'price'>;
-
-// export type TPaymentMethod = 'online' | 'cash';
-// export type TOrderDataPayment = Pick<IOrder, 'payment' | 'address'>;
-// export type TOrderDataContact = Pick<IOrder, 'email' | 'phone'>;
-// export type TOrderDataSuccess = Pick<IOrder, 'total' | 'items'>;
-
-
-
-
-
+// Интерфейс модели данных заказа
+export interface IOrderData {
+  setPaymentInOrder: (payment: string) => void;
+  setEmailInOrder: (email: string) => void;
+  setPhoneInOrder: (phone: string) => void;
+  setAddressInOrder: (address: string) => void;
+  getPaymentInOrder: () => string;
+  getEmailInOrder: () => string;
+  getPhoneInOrder: () => string;
+  getAddressInOrder: () => string;
+  clearOrderData: () => void;
+}

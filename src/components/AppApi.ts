@@ -28,14 +28,22 @@ export interface IApi {
 
 export class AppApi {
   private _baseUrl: IApi;
+  private _cdnUrl: string
 
-  constructor(baseUrl: IApi) {
+  constructor(baseUrl: IApi, cdn: string) {
     this._baseUrl = baseUrl;
+    this._cdnUrl = cdn;
   }
 
 
   getApiProducts(): Promise<IProduct[]> {
-    return this._baseUrl.get(`/product`).then((products: IProduct[]) => products);
+    return this._baseUrl.get<ApiListResponse<IProduct>>(`/product/`)
+      .then((res: ApiListResponse<IProduct>) => {
+        res.items.map((item) => ({
+          ...item,
+          image: this._cdnUrl + item.image,
+        }))
+      })
   }
 
   // getApiProduct(id: string): Promise<IProduct> {
