@@ -8,7 +8,23 @@ export interface IProduct {
   price: number | null;
 }
 
-// Интерфейс модели данных списка всех карточек продуктов
+// Интерфейс самого заказа
+export interface IOrder {
+  payment: string;
+  email: string;
+  phone: string;
+  address: string;
+  total: number;
+  items: string[];
+}
+
+// Интерфейс результата заказа
+export interface IOrderResult {
+  id: string;
+  total: number;
+}
+
+// Интерфейс класса модели данных списка всех карточек продуктов
 export interface IProductsData {
   setProductsAll: (data: IProduct[]) => void;
   getProductsAll: () => IProduct[];
@@ -16,9 +32,9 @@ export interface IProductsData {
   validatePriceProduct: (id: string) => boolean;
 }
 
-// Интерфейс модели данных корзины
+// Интерфейс класса модели данных корзины
 export interface IBasketData {
-  addProductInBasket: (product: IProduct) => void;
+  addProductInBasket: (item: IProduct) => void;
   getProductsAllInBasket: () => IProduct[];
   getCountProductsInBasket: () => number;
   checkProductInBasket: (id: string) => boolean;
@@ -27,7 +43,7 @@ export interface IBasketData {
   clearBasket: () => void;
 }
 
-// Интерфейс модели данных заказа
+// Интерфейс класса модели данных заказа
 export interface IOrderData {
   setPaymentInOrder: (payment: string) => void;
   setEmailInOrder: (email: string) => void;
@@ -38,4 +54,12 @@ export interface IOrderData {
   getPhoneInOrder: () => string;
   getAddressInOrder: () => string;
   clearOrderData: () => void;
+}
+
+export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+
+export interface IApi {
+  baseUrl: string;
+  get<T>(uri: string): Promise<T>;
+  post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }

@@ -4,8 +4,10 @@ import { IBasketData, IProduct } from "../../types";
 export class BasketData implements IBasketData {
   protected items: IProduct[] = [];
 
-  addProductInBasket(product: IProduct) {
-    this.items.push(product);
+  constructor() {}
+
+  addProductInBasket(item: IProduct): void {
+    this.items.push(item);
   }
 
   getProductsAllInBasket(): IProduct[] {

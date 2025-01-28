@@ -1,12 +1,16 @@
 import { IProduct, IProductsData } from '../../types/index';
+import { IEvents } from '../base/events';
 
 
 // Класс модели данных списка всех карточек продуктов
 export class ProductsData implements IProductsData {
   protected items: IProduct[] = [];
 
+  constructor(protected events: IEvents) {}
+
   setProductsAll(data: IProduct[]) {
     this.items = data;
+    this.events.emit('items:changed');
   }
 
   getProductsAll(): IProduct[] {

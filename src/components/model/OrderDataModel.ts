@@ -4,6 +4,8 @@ export class OrderData {
   phone: string = '';
   address: string = '';
 
+  constructor() {}
+
   setPaymentInOrder(payment: string): void {
     this.payment = payment;
   }
