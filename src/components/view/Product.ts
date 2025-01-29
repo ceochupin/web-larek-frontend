@@ -1,47 +1,62 @@
 import { IProduct } from "../../types";
-import { ensureElement } from "../../utils/utils";
+import { settings } from "../../utils/constants";
 import { Component } from "../base/Component"
-import { EventEmitter } from "../base/events";
+import { IEvents } from "../base/Events";
 
 export class Product extends Component<IProduct> {
-  protected productCategory: HTMLElement;
-  protected productTitle: HTMLElement;
-  protected productImage: HTMLImageElement;
-  protected productPrice: HTMLElement;
-  protected productButton: HTMLButtonElement;
-  protected productId: string;
+  protected _events: IEvents;
+  protected _category: HTMLElement;
+  protected _title: HTMLElement;
+  protected _description: HTMLElement;
+  protected _image: HTMLImageElement;
+  protected _price: HTMLElement;
+  protected _addButton: HTMLButtonElement;
+  protected _id: string;
 
-  constructor(container: HTMLElement, protected events: EventEmitter) {
+  constructor(protected container: HTMLElement, events: IEvents) {
     super(container);
-    this.productCategory = ensureElement('.card__category', this.container);
-    this.productTitle = ensureElement('.card__title', this.container);
-    this.productImage = ensureElement('.card__image', this.container) as HTMLImageElement;
-    this.productPrice = ensureElement('.card__price', this.container);
+    this._events = events;
 
-    this.container.addEventListener('click', () => this.events.emit('product:click', {id: this.productId}));
+    this._category = container.querySelector(settings.productElementClassName.category) as HTMLElement;
+    this._title = container.querySelector(settings.productElementClassName.title) as HTMLElement;
+    this._description = container.querySelector(settings.productElementClassName.description) as HTMLElement;
+    this._image = container.querySelector(settings.productElementClassName.image) as HTMLImageElement;
+    this._price = container.querySelector(settings.productElementClassName.price) as HTMLElement;
+    this._addButton = container.querySelector(settings.productElementClassName.button) as HTMLButtonElement;
+
+    this.container.addEventListener('click', () => this._events.emit('product:click', {id: this._id}));
   }
 
   set category(value: string) {
-    this.setText(this.productCategory, value);
+    this.setText(this._category, value);
+    this.toggleClass(this._category, settings.productCategoryClassName[value], true);
   }
 
   set title(value: string) {
-    this.setText(this.productTitle, value);
+    this.setText(this._title, value);
+  }
+
+  set description(value: string) {
+    this.setText(this._description, value);
   }
 
   set image(value: string) {
-    this.setImage(this.productImage, value);
+    this.setImage(this._image, value);
   }
 
   set price(value: number | null) {
-    if (value !== null) {
-      this.setText(this.productPrice, `${value} синапсов`);
-    } else {
-      this.setText(this.productPrice, 'Бесценно');
-    }
+    this.setText(this._price, value ? `${value} синапсов` : `Бесценно`);
+  }
+
+  set button(isBasket: boolean) {
+    this.setText(this._addButton, isBasket ? `Убрать из корзины` : `Добавить в корзину`);
   }
 
   set id(value: string) {
-    this.productId = value;
+    this._id = value;
+  }
+
+  get id() {
+    return this._id;
   }
 }

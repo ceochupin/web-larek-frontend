@@ -1,5 +1,5 @@
 import { IProduct, IProductsData } from '../../types/index';
-import { IEvents } from '../base/events';
+import { IEvents } from '../base/Events';
 
 
 // Класс модели данных списка всех карточек продуктов
@@ -10,7 +10,6 @@ export class ProductsData implements IProductsData {
 
   setProductsAll(data: IProduct[]) {
     this.items = data;
-    this.events.emit('items:changed');
   }
 
   getProductsAll(): IProduct[] {
