@@ -2,9 +2,11 @@ import { IBasketData, IProduct } from "../../types";
 
 // Класс модели данных корзины
 export class BasketData implements IBasketData {
-  protected items: IProduct[] = [];
+  protected items: IProduct[];
 
-  constructor() {}
+  constructor() {
+    this.items = [];
+  }
 
   addProductInBasket(item: IProduct): void {
     this.items.push(item);
