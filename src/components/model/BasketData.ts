@@ -1,7 +1,7 @@
-import { IBasketData, IProduct } from "../../types";
+import { IProduct } from "../../types";
 
 // Класс модели данных корзины
-export class BasketData implements IBasketData {
+export class BasketData {
   protected items: IProduct[];
 
   constructor() {

@@ -1,9 +1,9 @@
-import { IProduct, IProductsData } from '../../types/index';
+import { IProduct } from '../../types/index';
 import { IEvents } from '../base/Events';
 
 
 // Класс модели данных списка всех карточек продуктов
-export class ProductsData implements IProductsData {
+export class ProductsData {
   protected items: IProduct[] = [];
 
   constructor(protected events: IEvents) {}
