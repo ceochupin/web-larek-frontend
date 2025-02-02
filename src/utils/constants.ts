@@ -25,6 +25,7 @@ export const settings = {
   basketClassName: {
     'list': '.basket__list',
     'totalPrice': '.basket__price',
+    'index': '.basket__item-index',
     'buttonOrder': '.basket__button',
   } as Record<string, string>,
   modalClassName: {

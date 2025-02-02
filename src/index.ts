@@ -1,17 +1,23 @@
 import './scss/styles.scss';
 
-import { ProductsData } from './components/model/ProductsData';
-import { WebLarekApi } from './components/connector/WebLarekApi';
-import { API_URL, CDN_URL, settings } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { Product } from './components/view/Product';
 import { EventEmitter } from './components/base/Events';
-import { Page } from './components/view/Page';
-import { BasketData } from './components/model/BasketData';
+import { API_URL, CDN_URL, settings } from './utils/constants';
 import { IApi } from './types';
 import { Api } from './components/base/Api';
+import { WebLarekApi } from './components/connector/WebLarekApi';
+
+import { ProductsData } from './components/model/ProductsData';
+import { BasketData } from './components/model/BasketData';
+
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/view/Basket';
+
+import { Page } from './components/view/Page';
+
+import { CardCatalog } from './components/view/CardCatalog';
+import { CardPreview } from './components/view/CardPreview';
+import { CardBasket } from './components/view/CardBasket';
 
 // Темплейты HTMLTemplateElement
 const productCatalogTemplate = ensureElement(settings.templates.productCatalog) as HTMLTemplateElement;
@@ -30,6 +36,7 @@ const api = new WebLarekApi(baseUrl, CDN_URL);
 const page = new Page(pageContainer, events);
 const productsData = new ProductsData(events);
 const basketData = new BasketData();
+
 const modal = new Modal(modalTemplate);
 const basket = new Basket(cloneTemplate(basketTemplate));
 
@@ -42,7 +49,7 @@ api.getProductsApi()
 
 events.on('initialData:loaded', () => {
   const productsHTMLArray = productsData.getProductsAll().map(item => 
-    new Product(cloneTemplate(productCatalogTemplate), events).render(item));
+    new CardCatalog(cloneTemplate(productCatalogTemplate), events).render(item));
 
   const basketCountTotal = basketData.getCountProductsInBasket();
 
@@ -52,24 +59,28 @@ events.on('initialData:loaded', () => {
   })
 });
 
-events.on('product:click', ({id}: {id: string}) => {
+events.on('productCatalog:click', ({id}: {id: string}) => {
   const productSelect = productsData.getProduct(id);
-  const productPreview = new Product(cloneTemplate(productPreviewTemplate), events);
+  const productPreview = new CardPreview(cloneTemplate(productPreviewTemplate), events);
 
   modal.render({
     content: productPreview.render(productSelect)
   });
 });
 
-events.on('product:add', ({id}: {id: string}) => {
+events.on('productPreview:button', ({id}: {id: string}) => {
   basketData.addProductInBasket(productsData.getProduct(id));
+});
+
+events.on('productBasket:remove', ({id}: {id: string}) => {
+  basketData.removeProductInBasket(id);
 });
 
 events.on('basket:click', () => {
   const basketItems = basketData.getProductsAllInBasket().map(item =>
-    new Product(cloneTemplate(productBasketTemplate), events).render(item));
+    new CardBasket(cloneTemplate(productBasketTemplate), events).render(item));
 
-  const basketTotal = basketData.getTotalPriceProductsInBasket()
+  const basketTotal = basketData.getTotalPriceProductsInBasket();
 
   modal.render({
     content: basket.render({

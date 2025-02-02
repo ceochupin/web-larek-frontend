@@ -1,5 +1,5 @@
 // Интерфейс одной карточки продукта
-export interface IProduct {
+export interface ICard {
   id: string;
   description: string;
   image: string;
@@ -7,6 +7,10 @@ export interface IProduct {
   category: string;
   price: number | null;
 }
+
+export type TCardItem = Omit<ICard, 'id' | 'description'>;
+export type TCardPreview = Omit<ICard, 'id'>;
+export type TCardBasket = Pick<ICard, 'title' | 'price'>;
 
 // Интерфейс самого заказа
 export interface IOrder {

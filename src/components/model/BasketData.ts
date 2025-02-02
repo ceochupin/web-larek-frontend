@@ -1,18 +1,18 @@
-import { IProduct } from "../../types";
+import { ICard } from "../../types";
 
 // Класс модели данных корзины
 export class BasketData {
-  protected items: IProduct[];
+  protected items: ICard[];
 
   constructor() {
     this.items = [];
   }
 
-  addProductInBasket(item: IProduct): void {
+  addProductInBasket(item: ICard): void {
     this.items.push(item);
   }
 
-  getProductsAllInBasket(): IProduct[] {
+  getProductsAllInBasket(): ICard[] {
     return this.items;
   }
 

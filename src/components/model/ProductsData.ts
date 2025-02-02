@@ -1,22 +1,22 @@
-import { IProduct } from '../../types/index';
+import { ICard } from '../../types/index';
 import { IEvents } from '../base/Events';
 
 
 // Класс модели данных списка всех карточек продуктов
 export class ProductsData {
-  protected items: IProduct[] = [];
+  protected items: ICard[] = [];
 
   constructor(protected events: IEvents) {}
 
-  setProductsAll(data: IProduct[]) {
+  setProductsAll(data: ICard[]) {
     this.items = data;
   }
 
-  getProductsAll(): IProduct[] {
+  getProductsAll(): ICard[] {
     return this.items;
   }
 
-  getProduct(id: string): IProduct {
+  getProduct(id: string): ICard {
     return this.items.find((item) => item.id === id);
   }
 

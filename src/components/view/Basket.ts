@@ -12,7 +12,7 @@ export class Basket extends Component<IBasket> {
   protected totalPriceElement: HTMLElement;
   protected buttonOrderElement: HTMLButtonElement;
 
-  constructor(container: HTMLElement) {
+  constructor(protected container: HTMLElement) {
     super(container);
 
     this.listElement = ensureElement(settings.basketClassName.list, this.container) as HTMLElement;

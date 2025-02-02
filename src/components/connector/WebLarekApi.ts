@@ -1,4 +1,4 @@
-import { IApi, IOrder, IOrderResult, IProduct } from '../../types/index';
+import { IApi, IOrder, IOrderResult, ICard } from '../../types/index';
 
 type ApiListResponse<Type> = {
   total: number,
@@ -14,9 +14,9 @@ export class WebLarekApi {
     this._cdnUrl = cdnUrl;
   }
 
-  getProductsApi(): Promise<IProduct[]> {
-    return this._baseUrl.get<ApiListResponse<IProduct>>('/product/')
-      .then((data: ApiListResponse<IProduct>) => {
+  getProductsApi(): Promise<ICard[]> {
+    return this._baseUrl.get<ApiListResponse<ICard>>('/product/')
+      .then((data: ApiListResponse<ICard>) => {
         return data.items.map((item) => ({
           ...item,
           image: `${this._cdnUrl}${item.image}`,
