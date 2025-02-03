@@ -1,15 +1,17 @@
 import { ICard } from "../../types";
+import { IEvents } from "../base/Events";
 
 // Класс модели данных корзины
 export class BasketData {
   protected items: ICard[];
 
-  constructor() {
+  constructor(protected events: IEvents) {
     this.items = [];
   }
 
   addProductInBasket(item: ICard): void {
     this.items.push(item);
+    this.events.emit('basket:changed');
   }
 
   getProductsAllInBasket(): ICard[] {
@@ -30,6 +32,7 @@ export class BasketData {
 
   removeProductInBasket(id: string): void {
     this.items = this.items.filter((item) => item.id !== id);
+    this.events.emit('basket:changed');
   }
 
   getTotalPriceProductsInBasket(): number {
@@ -38,5 +41,6 @@ export class BasketData {
 
   clearBasket(): void {
     this.items = [];
+    this.events.emit('basket:changed');
   }
 }

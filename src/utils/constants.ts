@@ -4,6 +4,7 @@ export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 export const settings = {
   pageClassName: {
     'productsContainer': '.gallery',
+    'pageWrapper': '.page__wrapper',
     'basketButton': '.header__basket',
     'basketCounter': '.header__basket-counter',
   } as Record<string, string>,

@@ -35,9 +35,9 @@ const api = new WebLarekApi(baseUrl, CDN_URL);
 
 const page = new Page(pageContainer, events);
 const productsData = new ProductsData(events);
-const basketData = new BasketData();
+const basketData = new BasketData(events);
 
-const modal = new Modal(modalTemplate);
+const modal = new Modal(modalTemplate, events);
 const basket = new Basket(cloneTemplate(basketTemplate));
 
 api.getProductsApi()
@@ -63,17 +63,27 @@ events.on('productCatalog:click', ({id}: {id: string}) => {
   const productSelect = productsData.getProduct(id);
   const productPreview = new CardPreview(cloneTemplate(productPreviewTemplate), events);
 
+  productPreview.button = basketData.checkProductInBasket(id);
+
   modal.render({
     content: productPreview.render(productSelect)
   });
 });
 
 events.on('productPreview:button', ({id}: {id: string}) => {
-  basketData.addProductInBasket(productsData.getProduct(id));
+  if (basketData.checkProductInBasket(id)) {
+    basketData.removeProductInBasket(id);
+  } else {
+    basketData.addProductInBasket(productsData.getProduct(id));
+  }
+
+  events.emit('productCatalog:click', {id});
 });
 
 events.on('productBasket:remove', ({id}: {id: string}) => {
   basketData.removeProductInBasket(id);
+
+  events.emit('basket:click');
 });
 
 events.on('basket:click', () => {
@@ -88,4 +98,20 @@ events.on('basket:click', () => {
       total: basketTotal,
     })
   });
-})
+});
+
+events.on('basket:changed', () => {
+  const basketCountTotal = basketData.getCountProductsInBasket();
+
+  page.render({
+    basketCounter: basketCountTotal,
+  });
+});
+
+events.on('modal:open', () => {
+  modal.locked(true);
+});
+
+events.on('modal:close', () => {
+  modal.locked(false);
+});
