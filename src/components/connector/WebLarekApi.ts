@@ -1,4 +1,4 @@
-import { IApi, IOrder, IOrderResult, ICard } from '../../types/index';
+import { IApi, IOrder, IOrderSuccess, ICard } from '../../types/index';
 
 type ApiListResponse<Type> = {
   total: number,
@@ -25,7 +25,7 @@ export class WebLarekApi {
 
   }
 
-  createOrderApi(data: IOrder): Promise<IOrderResult> {
-    return this._baseUrl.post<IOrderResult> ('/order/', data);
+  createOrderApi(data: IOrder): Promise<IOrderSuccess> {
+    return this._baseUrl.post<IOrderSuccess> ('/order/', data);
   }
 }

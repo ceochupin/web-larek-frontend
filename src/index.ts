@@ -38,7 +38,7 @@ const productsData = new ProductsData(events);
 const basketData = new BasketData(events);
 
 const modal = new Modal(modalTemplate, events);
-const basket = new Basket(cloneTemplate(basketTemplate));
+const basket = new Basket(cloneTemplate(basketTemplate), events);
 
 api.getProductsApi()
   .then(data => {
@@ -64,6 +64,8 @@ events.on('productCatalog:click', ({id}: {id: string}) => {
   const productPreview = new CardPreview(cloneTemplate(productPreviewTemplate), events);
 
   productPreview.button = basketData.checkProductInBasket(id);
+
+  productPreview.buttonState = productsData.validatePriceProduct(id);
 
   modal.render({
     content: productPreview.render(productSelect)
@@ -92,6 +94,8 @@ events.on('basket:click', () => {
 
   const basketTotal = basketData.getTotalPriceProductsInBasket();
 
+  basket.buttonState = basketTotal ? true : false;
+
   modal.render({
     content: basket.render({
       items: basketItems,
@@ -106,6 +110,15 @@ events.on('basket:changed', () => {
   page.render({
     basketCounter: basketCountTotal,
   });
+});
+
+events.on('basket:stepOrder', () => {
+  console.log('basket:stepOrder');
+})
+
+events.on('success:close', () => {
+  basketData.clearBasket();
+  modal.close();
 });
 
 events.on('modal:open', () => {

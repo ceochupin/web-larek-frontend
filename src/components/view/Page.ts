@@ -14,7 +14,7 @@ export class Page extends Component<IPage> {
   protected elementBasketCounter: HTMLElement;
   protected basketButtonElement: HTMLButtonElement;
 
-  constructor(container: HTMLElement, protected events: IEvents) {
+  constructor(protected container: HTMLElement, protected events: IEvents) {
     super(container);
 
     this.productsContainer = ensureElement(settings.pageClassName.productsContainer, this.container) as HTMLElement;

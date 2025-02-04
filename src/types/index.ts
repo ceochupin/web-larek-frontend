@@ -12,9 +12,11 @@ export type TCardItem = Omit<ICard, 'id' | 'description'>;
 export type TCardPreview = Omit<ICard, 'id'>;
 export type TCardBasket = Pick<ICard, 'title' | 'price'>;
 
+export type TPayment = 'card' | 'cash';
+
 // Интерфейс самого заказа
 export interface IOrder {
-  payment: string;
+  payment: TPayment;
   email: string;
   phone: string;
   address: string;
@@ -22,8 +24,11 @@ export interface IOrder {
   items: string[];
 }
 
+export type TOrder = Pick<IOrder, 'payment' | 'email'>;
+export type TContacts = Pick<IOrder, 'phone' | 'address'>;
+
 // Интерфейс результата заказа
-export interface IOrderResult {
+export interface IOrderSuccess {
   id: string;
   total: number;
 }

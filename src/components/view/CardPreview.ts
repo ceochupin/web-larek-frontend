@@ -10,7 +10,7 @@ export class CardPreview extends Card<TCardPreview> {
   protected _image: HTMLImageElement;
   protected _button: HTMLButtonElement;
 
-  constructor(container: HTMLElement, protected events: IEvents) {
+  constructor(protected container: HTMLElement, protected events: IEvents) {
     super(container);
 
     this._category = ensureElement(settings.productElementClassName.category, this.container) as HTMLElement;
@@ -36,5 +36,9 @@ export class CardPreview extends Card<TCardPreview> {
 
   set button(isBasket: boolean) {
     this.setText(this._button, isBasket ? `Убрать` : `В корзину`);
+  }
+
+  set buttonState(value: boolean) {
+    this.setDisabled(this._button, !value);
   }
 }
