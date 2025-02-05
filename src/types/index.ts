@@ -1,4 +1,4 @@
-// Интерфейс одной карточки продукта
+// Интерфейс одной карточки получаемой с сервера
 export interface ICard {
   id: string;
   description: string;
@@ -8,10 +8,21 @@ export interface ICard {
   price: number | null;
 }
 
-export type TCardItem = Omit<ICard, 'id' | 'description'>;
+export interface ICards {
+  items: ICard[];
+}
+
+// Данные карточки в каталоге для представления
+export type TCardCatalog = Omit<ICard, 'id' | 'description'>;
+
+// Данные карточки в детальном виде для представления
 export type TCardPreview = Omit<ICard, 'id'>;
+
+// Данные карточки в корзине для представления
 export type TCardBasket = Pick<ICard, 'title' | 'price'>;
 
+
+// Возможные типы оплаты
 export type TPayment = 'card' | 'cash';
 
 // Интерфейс самого заказа
@@ -33,42 +44,28 @@ export interface IOrderSuccess {
   total: number;
 }
 
-// // Интерфейс класса модели данных списка всех карточек продуктов
-// export interface IProductsData {
-//   setProductsAll: (data: IProduct[]) => void;
-//   getProductsAll: () => IProduct[];
-//   getProduct: (id: string) => IProduct;
-//   validatePriceProduct: (id: string) => boolean;
-// }
-
-// // Интерфейс класса модели данных корзины
-// export interface IBasketData {
-//   addProductInBasket: (item: IProduct) => void;
-//   getProductsAllInBasket: () => IProduct[];
-//   getCountProductsInBasket: () => number;
-//   checkProductInBasket: (id: string) => boolean;
-//   removeProductInBasket: (id: string) => void;
-//   getTotalPriceProductsInBasket: () => number;
-//   clearBasket: () => void;
-// }
-
-// // Интерфейс класса модели данных заказа
-// export interface IOrderData {
-//   setPaymentInOrder: (payment: string) => void;
-//   setEmailInOrder: (email: string) => void;
-//   setPhoneInOrder: (phone: string) => void;
-//   setAddressInOrder: (address: string) => void;
-//   getPaymentInOrder: () => string;
-//   getEmailInOrder: () => string;
-//   getPhoneInOrder: () => string;
-//   getAddressInOrder: () => string;
-//   clearOrderData: () => void;
-// }
-
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {
   baseUrl: string;
   get<T>(uri: string): Promise<T>;
   post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
+}
+
+export interface ICardsData {
+  setCards(data: ICard[]): void;
+  getCards(): ICard[];
+  getCard(id: string): ICard;
+  isPriceNotNull(id: string): boolean;
+}
+
+export interface IBasketData {
+  addCardToBasket(item: ICard): void;
+  getCardsBasket(): ICard[];
+  getIdsCardsInBasket(): string[];
+  getCountCardsInBasket(): number;
+  checkCardInBasket(id: string): boolean;
+  removeCardFromBasket(id: string): void;
+  getTotalPriceFromBasket(): number;
+  clearBasket(): void;
 }

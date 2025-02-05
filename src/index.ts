@@ -2,12 +2,12 @@ import './scss/styles.scss';
 
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
-import { API_URL, CDN_URL, settings } from './utils/constants';
+import { API_URL, CDN_URL } from './utils/constants';
 import { IApi } from './types';
 import { Api } from './components/base/Api';
 import { WebLarekApi } from './components/connector/WebLarekApi';
 
-import { ProductsData } from './components/model/ProductsData';
+import { CardsData } from './components/model/CardsData';
 import { BasketData } from './components/model/BasketData';
 
 import { Modal } from './components/common/Modal';
@@ -19,39 +19,29 @@ import { CardCatalog } from './components/view/CardCatalog';
 import { CardPreview } from './components/view/CardPreview';
 import { CardBasket } from './components/view/CardBasket';
 
-// Темплейты HTMLTemplateElement
-const productCatalogTemplate = ensureElement(settings.templates.productCatalog) as HTMLTemplateElement;
-const productPreviewTemplate = ensureElement(settings.templates.productPreview) as HTMLTemplateElement;
-const productBasketTemplate = ensureElement(settings.templates.productBasket) as HTMLTemplateElement;
-const basketTemplate = ensureElement(settings.templates.basketModal) as HTMLTemplateElement;
-
-// Контейнеры на странице HTMLElement
-const modalTemplate = ensureElement(settings.containers.modal) as HTMLElement;
-const pageContainer = ensureElement(settings.containers.page) as HTMLElement;
-
 const events = new EventEmitter();
 const baseUrl: IApi = new Api(API_URL);
 const api = new WebLarekApi(baseUrl, CDN_URL);
 
-const page = new Page(pageContainer, events);
-const productsData = new ProductsData(events);
+const cardCatalogTemplate = ensureElement('#card-catalog') as HTMLTemplateElement;
+const cardPreviewTemplate = ensureElement('#card-preview') as HTMLTemplateElement;
+const cardBasketTemplate = ensureElement('#card-basket') as HTMLTemplateElement;
+const basketTemplate = ensureElement('#basket') as HTMLTemplateElement;
+const modalContainer = ensureElement('#modal-container') as HTMLElement;
+const pageContainer = ensureElement('.page') as HTMLElement;
+
+const cardsData = new CardsData(events);
 const basketData = new BasketData(events);
 
-const modal = new Modal(modalTemplate, events);
+const page = new Page(pageContainer, events);
+const modal = new Modal(modalContainer, events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 
-api.getProductsApi()
-  .then(data => {
-    productsData.setProductsAll(data);
-    events.emit('initialData:loaded');
-  })
-  .catch(err => console.error(err));
+events.on('cardsData:changed', () => {
+  const productsHTMLArray = cardsData.getCards().map(item => 
+    new CardCatalog(cloneTemplate(cardCatalogTemplate), events).render(item));
 
-events.on('initialData:loaded', () => {
-  const productsHTMLArray = productsData.getProductsAll().map(item => 
-    new CardCatalog(cloneTemplate(productCatalogTemplate), events).render(item));
-
-  const basketCountTotal = basketData.getCountProductsInBasket();
+  const basketCountTotal = basketData.getCountCardsInBasket();
 
   page.render({
     productList: productsHTMLArray,
@@ -60,12 +50,12 @@ events.on('initialData:loaded', () => {
 });
 
 events.on('productCatalog:click', ({id}: {id: string}) => {
-  const productSelect = productsData.getProduct(id);
-  const productPreview = new CardPreview(cloneTemplate(productPreviewTemplate), events);
+  const productSelect = cardsData.getCard(id);
+  const productPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
 
-  productPreview.button = basketData.checkProductInBasket(id);
+  productPreview.button = basketData.checkCardInBasket(id);
 
-  productPreview.buttonState = productsData.validatePriceProduct(id);
+  productPreview.buttonState = cardsData.isPriceNotNull(id);
 
   modal.render({
     content: productPreview.render(productSelect)
@@ -73,28 +63,28 @@ events.on('productCatalog:click', ({id}: {id: string}) => {
 });
 
 events.on('productPreview:button', ({id}: {id: string}) => {
-  if (basketData.checkProductInBasket(id)) {
-    basketData.removeProductInBasket(id);
+  if (basketData.checkCardInBasket(id)) {
+    basketData.removeCardFromBasket(id);
   } else {
-    basketData.addProductInBasket(productsData.getProduct(id));
+    basketData.addCardToBasket(cardsData.getCard(id));
   }
 
   events.emit('productCatalog:click', {id});
 });
 
 events.on('productBasket:remove', ({id}: {id: string}) => {
-  basketData.removeProductInBasket(id);
+  basketData.removeCardFromBasket(id);
 
   events.emit('basket:click');
 });
 
 events.on('basket:click', () => {
-  const basketItems = basketData.getProductsAllInBasket().map(item =>
-    new CardBasket(cloneTemplate(productBasketTemplate), events).render(item));
+  const basketItems = basketData.getCardsBasket().map(item =>
+    new CardBasket(cloneTemplate(cardBasketTemplate), events).render(item));
 
-  const basketTotal = basketData.getTotalPriceProductsInBasket();
+  const basketTotal = basketData.getTotalPriceFromBasket();
 
-  basket.buttonState = basketTotal ? true : false;
+  basket.buttonState = basketTotal > 0;
 
   modal.render({
     content: basket.render({
@@ -105,7 +95,7 @@ events.on('basket:click', () => {
 });
 
 events.on('basket:changed', () => {
-  const basketCountTotal = basketData.getCountProductsInBasket();
+  const basketCountTotal = basketData.getCountCardsInBasket();
 
   page.render({
     basketCounter: basketCountTotal,
@@ -128,3 +118,7 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
   modal.locked(false);
 });
+
+api.getProductsApi()
+  .then(cardsData.setCards.bind(cardsData))
+  .catch(err => console.error(err));

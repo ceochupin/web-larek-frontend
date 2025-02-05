@@ -1,9 +1,9 @@
-import { TCardItem } from "../../types";
+import { TCardCatalog } from "../../types";
 import { settings } from "../../utils/constants";
 import { IEvents } from "../base/Events";
 import { Card } from "../common/Card";
 
-export class CardCatalog extends Card<TCardItem> {
+export class CardCatalog extends Card<TCardCatalog> {
   protected _category: HTMLElement;
   protected _image: HTMLImageElement;
 

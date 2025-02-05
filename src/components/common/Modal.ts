@@ -8,44 +8,41 @@ interface IModal {
 }
 
 export class Modal extends Component<IModal> {
-  protected modalCloseButton: HTMLButtonElement;
+  protected _closeButton: HTMLButtonElement;
   protected _content: HTMLElement;
 
 
   constructor(container: HTMLElement, protected events: IEvents) {
     super(container);
 
-    this.modalCloseButton = ensureElement(settings.modalClassName.closeButton, container) as HTMLButtonElement;
-    this._content = ensureElement(settings.modalClassName.contentContainer, container) as HTMLElement;
+    this._closeButton = ensureElement('.modal__close', container) as HTMLButtonElement;
+    this._content = ensureElement('.modal__content', container) as HTMLElement;
 
-    this.modalCloseButton.addEventListener('click', this.close.bind(this));
-    this.container.addEventListener('mousedown', (evt) => {
-      if (evt.target === evt.currentTarget) {
-        this.close();
-      }
-    });
+    this._closeButton.addEventListener('click', this.close.bind(this));
+    this.container.addEventListener('click', this.close.bind(this));
     this.handleEscUp = this.handleEscUp.bind(this);
 
-    this._content.addEventListener('mousedown', (event) => event.stopPropagation());
+    this._content.addEventListener('click', (event) => event.stopPropagation());
   }
 
   set content(value: HTMLElement) {
     this._content.replaceChildren(value);
   }
 
-  open(): void {
-    this.toggleClass(this.container, settings.modalClassName.active, true);
+  open() {
+    this.toggleClass(this.container, 'modal_active', true);
     document.addEventListener('keyup', this.handleEscUp);
     this.events.emit('modal:open');
   }
 
-  close(): void {
-    this.toggleClass(this.container, settings.modalClassName.active, false);
+  close() {
+    this.toggleClass(this.container, 'modal_active', false);
     document.removeEventListener('keyup', this.handleEscUp);
+    this.content = null;
     this.events.emit('modal:close');
   }
 
-  handleEscUp(evt: KeyboardEvent): void {
+  handleEscUp(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
       this.close();
     }
@@ -55,8 +52,8 @@ export class Modal extends Component<IModal> {
     this.toggleClass(this.container, 'page__wrapper_locked', value);
   }
 
-  render(modalData: IModal): HTMLElement {
-    super.render(modalData);
+  render(data: IModal): HTMLElement {
+    super.render(data);
     this.open();
     return this.container;
   }
