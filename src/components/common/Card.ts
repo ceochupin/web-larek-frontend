@@ -11,8 +11,8 @@ export class Card<T> extends Component<T> {
   constructor(protected container: HTMLElement) {
     super(container);
 
-    this._title = ensureElement(settings.productElementClassName.title, this.container) as HTMLElement;
-    this._price = ensureElement(settings.productElementClassName.price, this.container) as HTMLElement;
+    this._title = ensureElement('.card__title', this.container) as HTMLElement;
+    this._price = ensureElement('.card__price', this.container) as HTMLElement;
   }
 
   set title(value: string) {

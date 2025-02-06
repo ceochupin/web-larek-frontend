@@ -1,4 +1,3 @@
-import { settings } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
@@ -16,17 +15,17 @@ export class Basket extends Component<IBasket> {
   constructor(protected container: HTMLElement, protected events: IEvents) {
     super(container);
 
-    this.listElement = ensureElement(settings.basketClassName.list, this.container) as HTMLElement;
-    this.totalPriceElement = ensureElement(settings.basketClassName.totalPrice, this.container) as HTMLElement;
-    this.buttonOrderElement = ensureElement(settings.basketClassName.buttonOrder, this.container) as HTMLButtonElement;
+    this.listElement = ensureElement('.basket__list', this.container) as HTMLElement;
+    this.totalPriceElement = ensureElement('.basket__price', this.container) as HTMLElement;
+    this.buttonOrderElement = ensureElement('.basket__button', this.container) as HTMLButtonElement;
 
     this.buttonOrderElement.addEventListener('click', () => this.events.emit('basket:stepOrder'));
 
     this.items = [];
   }
 
-  set items(value: HTMLElement[]) {
-    this.listElement.replaceChildren(...value);
+  set items(data: HTMLElement[]) {
+    this.listElement.replaceChildren(...data);
   }
 
   set total(value: number) {

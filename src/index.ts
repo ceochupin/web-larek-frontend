@@ -7,7 +7,7 @@ import { IApi } from './types';
 import { Api } from './components/base/Api';
 import { WebLarekApi } from './components/connector/WebLarekApi';
 
-import { CardsData } from './components/model/CardsData';
+import { CardsData, ICardsDataState } from './components/model/CardsData';
 import { BasketData } from './components/model/BasketData';
 
 import { Modal } from './components/common/Modal';
@@ -30,8 +30,17 @@ const basketTemplate = ensureElement('#basket') as HTMLTemplateElement;
 const modalContainer = ensureElement('#modal-container') as HTMLElement;
 const pageContainer = ensureElement('.page') as HTMLElement;
 
-const cardsData = new CardsData(events);
+// const cardsData = new CardsData(undefined, events);
 const basketData = new BasketData(events);
+
+
+const initialState: ICardsDataState = { items: [] };
+const cardsData = new CardsData(initialState, events);
+
+// const events = new EventEmitter(); // предполагается, что у вас есть какой-то класс для работы с событиями
+// const initialState: ICardsDataState = { items: [] };
+// const cardsData = new CardsData(initialState, events);
+
 
 const page = new Page(pageContainer, events);
 const modal = new Modal(modalContainer, events);
@@ -44,7 +53,7 @@ events.on('cardsData:changed', () => {
   const basketCountTotal = basketData.getCountCardsInBasket();
 
   page.render({
-    productList: productsHTMLArray,
+    cardsList: productsHTMLArray,
     basketCounter: basketCountTotal,
   })
 });
@@ -79,8 +88,11 @@ events.on('productBasket:remove', ({id}: {id: string}) => {
 });
 
 events.on('basket:click', () => {
-  const basketItems = basketData.getCardsBasket().map(item =>
-    new CardBasket(cloneTemplate(cardBasketTemplate), events).render(item));
+  const basketCards = basketData.getCardsBasket().map((item, index) => {
+    const basketCard = new CardBasket(cloneTemplate(cardBasketTemplate), events);
+    basketCard.index = ++index;
+    return basketCard.render(item);
+  });
 
   const basketTotal = basketData.getTotalPriceFromBasket();
 
@@ -88,7 +100,7 @@ events.on('basket:click', () => {
 
   modal.render({
     content: basket.render({
-      items: basketItems,
+      items: basketCards,
       total: basketTotal,
     })
   });

@@ -13,17 +13,17 @@ export class CardPreview extends Card<TCardPreview> {
   constructor(protected container: HTMLElement, protected events: IEvents) {
     super(container);
 
-    this._category = ensureElement(settings.productElementClassName.category, this.container) as HTMLElement;
-    this._description = ensureElement(settings.productElementClassName.description, this.container) as HTMLElement;
-    this._image = ensureElement(settings.productElementClassName.image, this.container) as HTMLImageElement;
-    this._button = ensureElement(settings.productElementClassName.button, this.container) as HTMLButtonElement;
+    this._category = ensureElement('.card__category', this.container) as HTMLElement;
+    this._description = ensureElement('.card__text', this.container) as HTMLElement;
+    this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
+    this._button = ensureElement('.card__button', this.container) as HTMLButtonElement;
 
     this._button.addEventListener('click', () => this.events.emit('productPreview:button', {id: this._id}));
   }
 
   set category(value: string) {
     this.setText(this._category, value);
-    this.toggleClass(this._category, settings.productCategoryClassName[value], true);
+    this.toggleClass(this._category, settings.category[value], true);
   }
 
   set description(value: string) {

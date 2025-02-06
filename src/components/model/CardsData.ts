@@ -1,30 +1,31 @@
 import { ICard, ICardsData } from '../../types/index';
 import { IEvents } from '../base/Events';
+import { Model } from '../base/Model';
 
+export interface ICardsDataState {
+  items: ICard[];
+}
 
-// Класс модели данных списка всех карточек продуктов
-export class CardsData implements ICardsData {
-  protected items: ICard[];
-
-  constructor(protected events: IEvents) {
-    this.items = [];
+export class CardsData extends Model<ICardsDataState> implements ICardsData {
+  constructor(protected data: Partial<ICardsDataState> = { items: [] }, protected events: IEvents) {
+    super(data, events);
   }
 
   setCards(data: ICard[]) {
-    this.items = data;
-    this.events.emit('cardsData:changed');
+    this.data.items = data;
+    this.emitChanges('cardsData:changed');
   }
 
   getCards(): ICard[] {
-    return [...this.items];
+    return [...this.data.items];
   }
 
   getCard(id: string): ICard | undefined {
-    return this.items.find((item) => item.id === id);
+    return this.data.items.find((item) => item.id === id);
   }
 
   isPriceNotNull(id: string): boolean {
-    return this.items.some((item) => item.id === id && item.price !== null);
+    return this.data.items.some((item) => item.id === id && item.price !== null);
   }
 }
 

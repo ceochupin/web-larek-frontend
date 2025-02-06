@@ -1,7 +1,6 @@
 import { IBasketData, ICard } from "../../types";
 import { IEvents } from "../base/Events";
 
-// Класс модели данных корзины
 export class BasketData implements IBasketData {
   protected items: ICard[];
 
