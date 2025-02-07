@@ -1,7 +1,5 @@
-import { settings } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-import { IEvents } from "../base/Events";
 
 export class Card<T> extends Component<T> {
   protected _title: HTMLElement;

@@ -69,3 +69,47 @@ export interface IBasketData {
   getTotalPriceFromBasket(): number;
   clearBasket(): void;
 }
+
+export interface ICardWithSelection extends ICard {
+  selected: boolean;
+}
+
+export interface ICatalogData {
+  setCards(data: ICard[]): void;
+  getCards(): ICard[];
+  getCard(id: string): ICard | undefined;
+  toggleCardSelection(id: string): void;
+  getSelectedCards(): ICard[];
+  getSelectedCardIds(): string[];
+  getSelectedCardsCount(): number;
+  getTotalPriceOfSelectedCards(): number;
+  clearSelection(): void;
+  isPriceNotNull(id: string): boolean;
+}
+
+export interface ICatalogDataState {
+  cards: ICardWithSelection[];
+}
+
+export interface IUser {
+  payment?: TPayment;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface IUserData {
+  setPayment(payment: TPayment): void;
+  setEmail(email: string): void;
+  setPhone(phone: string): void;
+  setAddress(address: string): void;
+  getPayment(): string;
+  getEmail(): string;
+  getPhone(): string;
+  getAddress(): string;
+  clearUserData(): void;
+}
+
+export interface IUserDataState {
+  user: IUser;
+}

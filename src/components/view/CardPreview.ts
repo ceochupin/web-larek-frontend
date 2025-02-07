@@ -4,6 +4,9 @@ import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/Events";
 import { Card } from "../common/Card";
 
+// делаю именно отдельным классом расширяя Card, а не CardCatalog
+// потому что тогда нам бы пришлось здесь отписаться от слушателя
+// клика по контейнеру. А так получился полностью независимый класс
 export class CardPreview extends Card<TCardPreview> {
   protected _category: HTMLElement;
   protected _description: HTMLElement;
@@ -18,7 +21,7 @@ export class CardPreview extends Card<TCardPreview> {
     this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
     this._button = ensureElement('.card__button', this.container) as HTMLButtonElement;
 
-    this._button.addEventListener('click', () => this.events.emit('productPreview:button', {id: this._id}));
+    this._button.addEventListener('click', () => this.events.emit('cardPreviewButton:click', {id: this._id}));
   }
 
   set category(value: string) {

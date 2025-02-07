@@ -14,7 +14,7 @@ export class CardCatalog extends Card<TCardCatalog> {
     this._category = ensureElement('.card__category', this.container) as HTMLElement;
     this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
 
-    this.container.addEventListener('click', () => this.events.emit('productCatalog:click', {id: this._id}));
+    this.container.addEventListener('click', () => this.events.emit('cardCatalog:click', {id: this._id}));
   }
 
   set category(value: string) {

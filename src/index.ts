@@ -3,12 +3,11 @@ import './scss/styles.scss';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
 import { API_URL, CDN_URL } from './utils/constants';
-import { IApi } from './types';
+import { IApi, ICatalogDataState, IUserDataState } from './types';
 import { Api } from './components/base/Api';
 import { WebLarekApi } from './components/connector/WebLarekApi';
 
-import { CardsData, ICardsDataState } from './components/model/CardsData';
-import { BasketData } from './components/model/BasketData';
+import { CatalogData } from './components/model/CatalogData';
 
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/view/Basket';
@@ -18,6 +17,7 @@ import { Page } from './components/view/Page';
 import { CardCatalog } from './components/view/CardCatalog';
 import { CardPreview } from './components/view/CardPreview';
 import { CardBasket } from './components/view/CardBasket';
+import { UserData } from './components/model/UserData';
 
 const events = new EventEmitter();
 const baseUrl: IApi = new Api(API_URL);
@@ -30,87 +30,72 @@ const basketTemplate = ensureElement('#basket') as HTMLTemplateElement;
 const modalContainer = ensureElement('#modal-container') as HTMLElement;
 const pageContainer = ensureElement('.page') as HTMLElement;
 
-// const cardsData = new CardsData(undefined, events);
-const basketData = new BasketData(events);
+const initialStateCatalog: ICatalogDataState = { cards: [] };
+const catalogData = new CatalogData(initialStateCatalog, events);
 
-
-const initialState: ICardsDataState = { items: [] };
-const cardsData = new CardsData(initialState, events);
-
-// const events = new EventEmitter(); // предполагается, что у вас есть какой-то класс для работы с событиями
-// const initialState: ICardsDataState = { items: [] };
-// const cardsData = new CardsData(initialState, events);
-
+const initialStateUser: IUserDataState = { user: {} };
+const userData = new UserData(initialStateUser, events);
 
 const page = new Page(pageContainer, events);
 const modal = new Modal(modalContainer, events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 
-events.on('cardsData:changed', () => {
-  const productsHTMLArray = cardsData.getCards().map(item => 
+api.getProductsApi()
+  .then(catalogData.setCards.bind(catalogData))
+  .catch(err => console.error(err));
+
+events.on('catalog:changed', () => {
+  const cardsHTMLArray = catalogData.getCards().map(item => 
     new CardCatalog(cloneTemplate(cardCatalogTemplate), events).render(item));
 
-  const basketCountTotal = basketData.getCountCardsInBasket();
+  const basketCountTotal = catalogData.getSelectedCardsCount();
 
   page.render({
-    cardsList: productsHTMLArray,
+    cardsList: cardsHTMLArray,
     basketCounter: basketCountTotal,
   })
 });
 
-events.on('productCatalog:click', ({id}: {id: string}) => {
-  const productSelect = cardsData.getCard(id);
-  const productPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
+events.on('cardCatalog:click', ({id}: {id: string}) => {
+  const cardClick = catalogData.getCard(id);
+  const cardPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
 
-  productPreview.button = basketData.checkCardInBasket(id);
-
-  productPreview.buttonState = cardsData.isPriceNotNull(id);
+  cardPreview.button = cardClick.selected;
+  cardPreview.buttonState = catalogData.isPriceNotNull(id);
 
   modal.render({
-    content: productPreview.render(productSelect)
+    content: cardPreview.render(cardClick)
   });
 });
 
-events.on('productPreview:button', ({id}: {id: string}) => {
-  if (basketData.checkCardInBasket(id)) {
-    basketData.removeCardFromBasket(id);
-  } else {
-    basketData.addCardToBasket(cardsData.getCard(id));
-  }
+events.on('cardPreviewButton:click', ({id}: {id: string}) => {
+  catalogData.toggleCardSelection(id);
 
-  events.emit('productCatalog:click', {id});
+  events.emit('cardCatalog:click', {id});
 });
 
-events.on('productBasket:remove', ({id}: {id: string}) => {
-  basketData.removeCardFromBasket(id);
+events.on('cardBasketButtonRemove:click', ({id}: {id: string}) => {
+  catalogData.toggleCardSelection(id);
 
   events.emit('basket:click');
 });
 
 events.on('basket:click', () => {
-  const basketCards = basketData.getCardsBasket().map((item, index) => {
-    const basketCard = new CardBasket(cloneTemplate(cardBasketTemplate), events);
-    basketCard.index = ++index;
-    return basketCard.render(item);
+  const cardsBasketHTMLArray = catalogData.getSelectedCards().map((item, index) => {
+    const cardBasket = new CardBasket(cloneTemplate(cardBasketTemplate), events);
+    cardBasket.index = ++index;
+    return cardBasket.render(item);
   });
 
-  const basketTotal = basketData.getTotalPriceFromBasket();
+  const basketTotal = catalogData.getTotalPriceOfSelectedCards();
 
   basket.buttonState = basketTotal > 0;
 
   modal.render({
     content: basket.render({
-      items: basketCards,
+      items: cardsBasketHTMLArray,
       total: basketTotal,
     })
-  });
-});
-
-events.on('basket:changed', () => {
-  const basketCountTotal = basketData.getCountCardsInBasket();
-
-  page.render({
-    basketCounter: basketCountTotal,
   });
 });
 
@@ -119,7 +104,7 @@ events.on('basket:stepOrder', () => {
 })
 
 events.on('success:close', () => {
-  basketData.clearBasket();
+  catalogData.clearSelection();
   modal.close();
 });
 
@@ -130,7 +115,3 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
   modal.locked(false);
 });
-
-api.getProductsApi()
-  .then(cardsData.setCards.bind(cardsData))
-  .catch(err => console.error(err));
