@@ -25,7 +25,7 @@ export class WebLarekApi {
 
   }
 
-  createOrderApi(data: IOrder): Promise<IOrderSuccess> {
+  postOrderApi(data: IOrder): Promise<IOrderSuccess> {
     return this._baseUrl.post<IOrderSuccess> ('/order/', data);
   }
 }

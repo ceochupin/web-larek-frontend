@@ -21,7 +21,7 @@ export class CardPreview extends Card<TCardPreview> {
     this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
     this._button = ensureElement('.card__button', this.container) as HTMLButtonElement;
 
-    this._button.addEventListener('click', () => this.events.emit('cardPreviewButton:click', {id: this._id}));
+    this._button.addEventListener('click', () => this.events.emit('cardPreviewButton:click', { id: this._id }));
   }
 
   set category(value: string) {
@@ -37,7 +37,7 @@ export class CardPreview extends Card<TCardPreview> {
     this.setImage(this._image, value);
   }
 
-  set button(isBasket: boolean) {
+  set buttonText(isBasket: boolean) {
     this.setText(this._button, isBasket ? `Убрать` : `В корзину`);
   }
 

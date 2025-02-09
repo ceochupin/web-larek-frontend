@@ -1,4 +1,4 @@
-import { IUserData, IUserDataState, TPayment } from "../../types";
+import { IUser, IUserData, IUserDataState } from "../../types";
 import { IEvents } from "../base/Events";
 import { Model } from "../base/Model";
 
@@ -7,23 +7,12 @@ export class UserData extends Model<IUserDataState> implements IUserData {
     super(data, events);
   }
 
-  setPayment(payment: TPayment) {
-    this.data.user.payment = payment;
+  setUserData(field: keyof IUser, value: string): void {
+    this.data.user[field] = value;
+    console.log(this.data.user);
   }
 
-  setEmail(email: string) {
-    this.data.user.email = email;
-  }
-
-  setPhone(phone: string) {
-    this.data.user.phone = phone;
-  }
-
-  setAddress(address: string) {
-    this.data.user.address = address;
-  }
-
-  getPayment(): TPayment {
+  getPayment(): string {
     return this.data.user.payment;
   }
 
@@ -40,7 +29,7 @@ export class UserData extends Model<IUserDataState> implements IUserData {
   }
 
   clearUserData(): void {
-    this.data.user.payment = null;
+    this.data.user.payment = '';
     this.data.user.email = '';
     this.data.user.phone = '';
     this.data.user.address = '';

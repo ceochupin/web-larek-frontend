@@ -1,4 +1,11 @@
-// Интерфейс одной карточки получаемой с сервера
+export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+
+export interface IApi {
+  baseUrl: string;
+  get<T>(uri: string): Promise<T>;
+  post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
+}
+
 export interface ICard {
   id: string;
   description: string;
@@ -8,70 +15,12 @@ export interface ICard {
   price: number | null;
 }
 
-export interface ICards {
-  items: ICard[];
-}
-
-// Данные карточки в каталоге для представления
-export type TCardCatalog = Omit<ICard, 'id' | 'description'>;
-
-// Данные карточки в детальном виде для представления
-export type TCardPreview = Omit<ICard, 'id'>;
-
-// Данные карточки в корзине для представления
-export type TCardBasket = Pick<ICard, 'title' | 'price'>;
-
-
-// Возможные типы оплаты
-export type TPayment = 'card' | 'cash';
-
-// Интерфейс самого заказа
-export interface IOrder {
-  payment: TPayment;
-  email: string;
-  phone: string;
-  address: string;
-  total: number;
-  items: string[];
-}
-
-export type TOrder = Pick<IOrder, 'payment' | 'email'>;
-export type TContacts = Pick<IOrder, 'phone' | 'address'>;
-
-// Интерфейс результата заказа
-export interface IOrderSuccess {
-  id: string;
-  total: number;
-}
-
-export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
-
-export interface IApi {
-  baseUrl: string;
-  get<T>(uri: string): Promise<T>;
-  post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
-}
-
-export interface ICardsData {
-  setCards(data: ICard[]): void;
-  getCards(): ICard[];
-  getCard(id: string): ICard;
-  isPriceNotNull(id: string): boolean;
-}
-
-export interface IBasketData {
-  addCardToBasket(item: ICard): void;
-  getCardsBasket(): ICard[];
-  getIdsCardsInBasket(): string[];
-  getCountCardsInBasket(): number;
-  checkCardInBasket(id: string): boolean;
-  removeCardFromBasket(id: string): void;
-  getTotalPriceFromBasket(): number;
-  clearBasket(): void;
-}
-
 export interface ICardWithSelection extends ICard {
   selected: boolean;
+}
+
+export interface ICatalogDataState {
+  cards: ICardWithSelection[];
 }
 
 export interface ICatalogData {
@@ -87,22 +36,21 @@ export interface ICatalogData {
   isPriceNotNull(id: string): boolean;
 }
 
-export interface ICatalogDataState {
-  cards: ICardWithSelection[];
-}
+// export type TPayment = 'card' | 'cash';
 
 export interface IUser {
-  payment?: TPayment;
+  payment?: string;
   email?: string;
   phone?: string;
   address?: string;
 }
 
+export interface IUserDataState {
+  user: IUser;
+}
+
 export interface IUserData {
-  setPayment(payment: TPayment): void;
-  setEmail(email: string): void;
-  setPhone(phone: string): void;
-  setAddress(address: string): void;
+  setUserData(field: keyof IUser, value: string): void;
   getPayment(): string;
   getEmail(): string;
   getPhone(): string;
@@ -110,6 +58,26 @@ export interface IUserData {
   clearUserData(): void;
 }
 
-export interface IUserDataState {
-  user: IUser;
+export interface IOrder extends IUser {
+  total: number;
+  items: string[];
 }
+
+export type TCardCatalog = Omit<ICard, 'id' | 'description'>;
+export type TCardPreview = Omit<ICard, 'id'>;
+export type TCardBasket = Pick<ICard, 'title' | 'price'>;
+
+export type TUserOrder = Pick<IUser, 'payment' | 'address'>;
+export type TUserContacts = Pick<IUser, 'phone' | 'email'>;
+
+export interface IOrderSuccess {
+  id: string;
+  total: number;
+}
+
+
+
+
+
+
+
