@@ -6,26 +6,19 @@ type ApiListResponse<Type> = {
 };
 
 export class WebLarekApi {
-  private _baseUrl: IApi;
-  private _cdnUrl: string;
-
-  constructor(baseUrl: IApi, cdnUrl: string) {
-    this._baseUrl = baseUrl;
-    this._cdnUrl = cdnUrl;
-  }
+  constructor(protected baseUrl: IApi, protected cdnUrl: string) {}
 
   getProductsApi(): Promise<ICard[]> {
-    return this._baseUrl.get<ApiListResponse<ICard>>('/product/')
-      .then((data: ApiListResponse<ICard>) => {
-        return data.items.map((item) => ({
+    return this.baseUrl.get<ApiListResponse<ICard>>('/product/')
+      .then((cardsData: ApiListResponse<ICard>) => {
+        return cardsData.items.map((item) => ({
           ...item,
-          image: `${this._cdnUrl}${item.image}`,
+          image: `${this.cdnUrl}${item.image}`,
         }))
       });
-
   }
 
-  postOrderApi(data: IOrder): Promise<IOrderSuccess> {
-    return this._baseUrl.post<IOrderSuccess> ('/order/', data);
+  postOrderApi(orderData: IOrder): Promise<IOrderSuccess> {
+    return this.baseUrl.post<IOrderSuccess>('/order/', orderData);
   }
 }

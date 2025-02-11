@@ -25,18 +25,16 @@ export interface ICatalogDataState {
 
 export interface ICatalogData {
   setCards(data: ICard[]): void;
-  getCards(): ICard[];
-  getCard(id: string): ICard | undefined;
-  toggleCardSelection(id: string): void;
-  getSelectedCards(): ICard[];
+  getCards(): ICardWithSelection[];
+  getCard(id: string): ICardWithSelection;
+  toggleCardSelected(id: string): void;
+  getSelectedCards(): ICardWithSelection[];
   getSelectedCardIds(): string[];
   getSelectedCardsCount(): number;
   getTotalPriceOfSelectedCards(): number;
   clearSelection(): void;
   isPriceNotNull(id: string): boolean;
 }
-
-// export type TPayment = 'card' | 'cash';
 
 export interface IUser {
   payment?: string;

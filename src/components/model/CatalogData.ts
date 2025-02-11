@@ -21,7 +21,7 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
     return this.data.cards.find((card) => card.id === id);
   }
 
-  toggleCardSelection(id: string) {
+  toggleCardSelected(id: string) {
     this.getCard(id).selected = !this.getCard(id).selected;
 
     this.emitChanges('catalog:changed');
@@ -53,3 +53,16 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
     return this.getCard(id).price !== null;
   }
 }
+
+// export interface ICatalogData {
+//   setCards(data: ICard[]): void;
+//   getCards(): ICard[];
+//   getCard(id: string): ICard;
+//   toggleCardSelected(id: string): void;
+//   getSelectedCards(): ICard[];
+//   getSelectedCardIds(): string[];
+//   getSelectedCardsCount(): number;
+//   getTotalPriceOfSelectedCards(): number;
+//   clearSelection(): void;
+//   isPriceNotNull(id: string): boolean;
+// }

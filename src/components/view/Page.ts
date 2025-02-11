@@ -2,7 +2,6 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-
 interface IPage {
   cardsList: HTMLElement[];
   basketCounter: number;

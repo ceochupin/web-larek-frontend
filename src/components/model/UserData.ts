@@ -9,7 +9,6 @@ export class UserData extends Model<IUserDataState> implements IUserData {
 
   setUserData(field: keyof IUser, value: string): void {
     this.data.user[field] = value;
-    console.log(this.data.user);
   }
 
   getPayment(): string {
@@ -29,9 +28,10 @@ export class UserData extends Model<IUserDataState> implements IUserData {
   }
 
   clearUserData(): void {
-    this.data.user.payment = '';
-    this.data.user.email = '';
-    this.data.user.phone = '';
-    this.data.user.address = '';
+    Object.keys(this.data.user).forEach(field => {
+      this.setUserData(field as keyof IUser, '');
+    });
+
+    this.emitChanges('userData:clear');
   }
 }

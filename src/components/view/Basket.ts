@@ -19,13 +19,14 @@ export class Basket extends Component<IBasket> {
     this.totalPriceElement = ensureElement('.basket__price', this.container) as HTMLElement;
     this.buttonOrderElement = ensureElement('.basket__button', this.container) as HTMLButtonElement;
 
-    this.buttonOrderElement.addEventListener('click', () => this.events.emit('basket:stepOrder'));
+    this.buttonOrderElement.addEventListener('click', () => this.events.emit('basket:submit'));
 
     this.items = [];
+    this.total = 0;
   }
 
-  set items(data: HTMLElement[]) {
-    this.listElement.replaceChildren(...data);
+  set items(cardsSelected: HTMLElement[]) {
+    this.listElement.replaceChildren(...cardsSelected);
   }
 
   set total(value: number) {

@@ -47,12 +47,12 @@ const catalogData = new CatalogData(initialStateCatalog, events);
 const initialStateUser: IUserDataState = { user: {} };
 const userData = new UserData(initialStateUser, events);
 
-const userOrder = new UserOrder(cloneTemplate(userOrderTemplate), events);
-const userContacts = new UserContacts(cloneTemplate(userContactsTemplate), events);
-
 const page = new Page(pageContainer, events);
 const modal = new Modal(modalContainer, events);
+const cardPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
+const userOrder = new UserOrder(cloneTemplate(userOrderTemplate), events);
+const userContacts = new UserContacts(cloneTemplate(userContactsTemplate), events);
 const success = new Success(cloneTemplate(successTemplate), events);
 
 api.getProductsApi()
@@ -71,9 +71,9 @@ events.on('catalog:changed', () => {
   })
 });
 
-events.on('cardCatalog:click', ({id}: {id: string}) => {
+events.on('cardCatalog:cardClick', ({ id }: { id: string }) => {
   const cardClick = catalogData.getCard(id);
-  const cardPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
+  
 
   cardPreview.buttonText = cardClick.selected;
   cardPreview.buttonState = catalogData.isPriceNotNull(id);
@@ -83,14 +83,14 @@ events.on('cardCatalog:click', ({id}: {id: string}) => {
   });
 });
 
-events.on('cardPreviewButton:click', ({ id }: { id: string }) => {
-  catalogData.toggleCardSelection(id);
+events.on('cardPreview:buttonClick', ({ id }: { id: string }) => {
+  catalogData.toggleCardSelected(id);
 
-  events.emit('cardCatalog:click', {id});
+  events.emit('cardCatalog:click', { id });
 });
 
-events.on('cardBasketButtonRemove:click', ({ id }: { id: string }) => {
-  catalogData.toggleCardSelection(id);
+events.on('cardBasket:buttonClick', ({ id }: { id: string }) => {
+  catalogData.toggleCardSelected(id);
 
   events.emit('basket:click');
 });
@@ -104,7 +104,7 @@ events.on('basket:click', () => {
 
   const basketTotal = catalogData.getTotalPriceOfSelectedCards();
 
-  basket.buttonState = basketTotal > 0;
+  basket.buttonState = !!basketTotal;
 
   modal.render({
     content: basket.render({
@@ -114,12 +114,10 @@ events.on('basket:click', () => {
   });
 });
 
-events.on('basket:stepOrder', () => {
+events.on('basket:submit', () => {
   modal.render({
     content: userOrder.render({
-      payment: null,
-      address: '',
-      valid: false,
+      valid: true,
       errors: [],
     })
   });
@@ -128,19 +126,13 @@ events.on('basket:stepOrder', () => {
 events.on('order:submit', () => {
   modal.render({
     content: userContacts.render({
-      email: '',
-      phone: '',
-      valid: false,
+      valid: true,
       errors: [],
     })
   })
 });
 
-events.on('/^contacts\..*:change$/',(data: { field: keyof IUser, value: string }) => {
-  userData.setUserData(data.field, data.value);
-});
-
-events.on('/^order\..*:change$/',(data: { field: keyof IUser, value: string }) => {
+events.on('userDataChange', (data: { field: keyof IUser, value: string }) => {
   userData.setUserData(data.field, data.value);
 });
 
@@ -164,6 +156,11 @@ events.on('contacts:submit', () => {
       userData.clearUserData();
   })
   .catch(err => console.error(err));
+});
+
+events.on('userData:clear', () => {
+  userOrder.reset();
+  userContacts.reset();
 });
 
 events.on('success:close', () => {
