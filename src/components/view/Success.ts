@@ -1,7 +1,7 @@
 import { IOrderSuccess } from '../../types';
 import { ensureElement } from '../../utils/utils';
-import { Component } from '../base/Ccomponent';
-import { IEvents } from '../base/Eevents';
+import { Component } from '../base/Component';
+import { IEvents } from '../base/Events';
 
 export class Success extends Component<IOrderSuccess> {
   protected _total: HTMLElement;

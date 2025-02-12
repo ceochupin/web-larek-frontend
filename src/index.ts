@@ -1,26 +1,26 @@
 import './scss/styles.scss';
 
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { EventEmitter } from './components/base/Eevents';
+import { EventEmitter } from './components/base/Events';
 import { API_URL, CDN_URL } from './utils/constants';
-import { Api } from './components/base/aApi';
-import { IApi, ICatalogDataState, IUser, IUserDataState } from './types';
+import { Api } from './components/base/api';
+import { IApi, IUser, IUserDataState } from './types';
 import { WebLarekApi } from './components/connector/WebLarekApi';
 
-import { CatalogData } from './components/model/CcatalogData';
+import { CatalogData } from './components/model/CatalogData';
 
-import { Modal } from './components/common/Mmodal';
-import { Basket } from './components/view/Bbasket';
+import { Modal } from './components/common/Modal';
+import { Basket } from './components/view/Basket';
 
-import { Page } from './components/view/Ppage';
+import { Page } from './components/view/Page';
 
-import { CardCatalog } from './components/view/CcardCatalog';
-import { CardPreview } from './components/view/CcardPreview';
-import { CardBasket } from './components/view/CcardBasket';
-import { UserData } from './components/model/UuserData';
-import { UserOrder } from './components/view/UuserOrder';
-import { UserContacts } from './components/view/UuserContacts';
-import { Success } from './components/view/Ssuccess';
+import { CardCatalog } from './components/view/CardCatalog';
+import { CardPreview } from './components/view/CardPreview';
+import { CardBasket } from './components/view/CardBasket';
+import { UserData } from './components/model/UserData';
+import { UserOrder } from './components/view/UserOrder';
+import { UserContacts } from './components/view/UserContacts';
+import { Success } from './components/view/Success';
 
 
 const events = new EventEmitter();

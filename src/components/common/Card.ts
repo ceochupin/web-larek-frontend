@@ -1,5 +1,5 @@
 import { ensureElement } from '../../utils/utils';
-import { Component } from '../base/Ccomponent';
+import { Component } from '../base/Component';
 
 export class Card<T> extends Component<T> {
   protected _title: HTMLElement;

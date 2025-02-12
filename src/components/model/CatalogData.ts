@@ -1,6 +1,6 @@
 import { ICard, ICardWithSelection, ICatalogData, ICatalogDataState } from '../../types';
-import { IEvents } from '../base/Eevents';
-import { Model } from '../base/Mmodel';
+import { IEvents } from '../base/Events';
+import { Model } from '../base/Model';
 
 export class CatalogData extends Model<ICatalogDataState> implements ICatalogData {
   protected cards: ICardWithSelection[] = [];

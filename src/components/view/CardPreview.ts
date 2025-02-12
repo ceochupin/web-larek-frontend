@@ -1,7 +1,7 @@
 import { TCardPreview } from '../../types';
 import { ensureElement } from '../../utils/utils';
-import { IEvents } from '../base/Eevents';
-import { CardCatalog } from './CcardCatalog';
+import { IEvents } from '../base/Events';
+import { CardCatalog } from './CardCatalog';
 
 export class CardPreview extends CardCatalog implements TCardPreview {
   protected _description: HTMLElement;
