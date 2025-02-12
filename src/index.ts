@@ -3,7 +3,7 @@ import './scss/styles.scss';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
 import { API_URL, CDN_URL } from './utils/constants';
-import { Api } from './components/base/iapiap';
+import { Api } from './components/base/api';
 import { IApi, IUser, IUserDataState } from './types';
 import { WebLarekApi } from './components/connector/WebLarekApi';
 
