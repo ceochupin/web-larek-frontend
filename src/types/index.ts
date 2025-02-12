@@ -72,10 +72,3 @@ export interface IOrderSuccess {
   id: string;
   total: number;
 }
-
-
-
-
-
-
-

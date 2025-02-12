@@ -10,7 +10,8 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
   setCards(data: ICard[]) {
     this.data.cards = data.map(card => ({ ...card, selected: false }));
 
-    this.emitChanges('catalog:changed');
+    this.emitChanges('catalogData:init');
+    this.emitChanges('catalogData:changed');
   }
 
   getCards(): ICardWithSelection[] {
@@ -24,7 +25,7 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
   toggleCardSelected(id: string) {
     this.getCard(id).selected = !this.getCard(id).selected;
 
-    this.emitChanges('catalog:changed');
+    this.emitChanges('catalogData:changed');
   }
 
   getSelectedCards(): ICardWithSelection[] {
@@ -46,23 +47,10 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
   clearSelection() {
     this.data.cards.forEach(card => card.selected = false);
 
-    this.emitChanges('catalog:changed');
+    this.emitChanges('catalogData:changed');
   }
 
   isPriceNotNull(id: string): boolean {
     return this.getCard(id).price !== null;
   }
 }
-
-// export interface ICatalogData {
-//   setCards(data: ICard[]): void;
-//   getCards(): ICard[];
-//   getCard(id: string): ICard;
-//   toggleCardSelected(id: string): void;
-//   getSelectedCards(): ICard[];
-//   getSelectedCardIds(): string[];
-//   getSelectedCardsCount(): number;
-//   getTotalPriceOfSelectedCards(): number;
-//   clearSelection(): void;
-//   isPriceNotNull(id: string): boolean;
-// }

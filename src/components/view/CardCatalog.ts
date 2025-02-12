@@ -6,6 +6,7 @@ import { Card } from "../common/Card";
 export class CardCatalog extends Card<TCardCatalog> {
   protected _category: HTMLElement;
   protected _image: HTMLImageElement;
+  protected _button: HTMLButtonElement;
 
   protected categoryValue = {
     'софт-скил': 'card__category_soft',
@@ -20,8 +21,13 @@ export class CardCatalog extends Card<TCardCatalog> {
 
     this._category = ensureElement('.card__category', this.container) as HTMLElement;
     this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
+    this._button = this.container.querySelector('.card__button') as HTMLButtonElement;
 
-    this.container.addEventListener('click', () => this.events.emit('cardCatalog:cardClick', { id: this._id }));
+    if (this._button) {
+      this._button.addEventListener('click', () => this.events.emit('cardPreview:selectedChanged', { id: this._id }));
+    } else {
+      this.container.addEventListener('click', () => this.events.emit('cardCatalog:openPreview', { id: this._id }));
+    }
   }
 
   set category(value: string) {

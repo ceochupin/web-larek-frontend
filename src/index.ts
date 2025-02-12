@@ -45,7 +45,8 @@ const initialStateCatalog: ICatalogDataState = { cards: [] };
 const catalogData = new CatalogData(initialStateCatalog, events);
 
 const initialStateUser: IUserDataState = { user: {} };
-const userData = new UserData(initialStateUser, events);
+const initialErrors: Record<string, string> = {};
+const userData = new UserData(initialErrors, initialStateUser, events);
 
 const page = new Page(pageContainer, events);
 const modal = new Modal(modalContainer, events);
@@ -55,25 +56,25 @@ const userOrder = new UserOrder(cloneTemplate(userOrderTemplate), events);
 const userContacts = new UserContacts(cloneTemplate(userContactsTemplate), events);
 const success = new Success(cloneTemplate(successTemplate), events);
 
-api.getProductsApi()
-  .then(catalogData.setCards.bind(catalogData))
-  .catch(err => console.error(err));
-
-events.on('catalog:changed', () => {
+events.on('catalogData:init', () => {
   const cardsHTMLArray = catalogData.getCards().map(item => 
     new CardCatalog(cloneTemplate(cardCatalogTemplate), events).render(item));
 
+  page.render({
+    cardsList: cardsHTMLArray
+  })
+});
+
+events.on('catalogData:changed', () => {
   const basketCountTotal = catalogData.getSelectedCardsCount();
 
   page.render({
-    cardsList: cardsHTMLArray,
     basketCounter: basketCountTotal,
   })
 });
 
-events.on('cardCatalog:cardClick', ({ id }: { id: string }) => {
+events.on('cardCatalog:openPreview', ({ id }: { id: string }) => {
   const cardClick = catalogData.getCard(id);
-  
 
   cardPreview.buttonText = cardClick.selected;
   cardPreview.buttonState = catalogData.isPriceNotNull(id);
@@ -83,41 +84,59 @@ events.on('cardCatalog:cardClick', ({ id }: { id: string }) => {
   });
 });
 
-events.on('cardPreview:buttonClick', ({ id }: { id: string }) => {
+events.on('cardPreview:selectedChanged', ({ id }: { id: string }) => {
   catalogData.toggleCardSelected(id);
 
-  events.emit('cardCatalog:click', { id });
+  events.emit('cardCatalog:openPreview', { id });
 });
 
-events.on('cardBasket:buttonClick', ({ id }: { id: string }) => {
-  catalogData.toggleCardSelected(id);
-
-  events.emit('basket:click');
-});
-
-events.on('basket:click', () => {
+events.on('basket:open', () => {
   const cardsBasketHTMLArray = catalogData.getSelectedCards().map((item, index) => {
     const cardBasket = new CardBasket(cloneTemplate(cardBasketTemplate), events);
     cardBasket.index = ++index;
     return cardBasket.render(item);
   });
 
-  const basketTotal = catalogData.getTotalPriceOfSelectedCards();
+  const basketTotalPrice = catalogData.getTotalPriceOfSelectedCards();
 
-  basket.buttonState = !!basketTotal;
+  basket.buttonState = !!basketTotalPrice;
 
   modal.render({
     content: basket.render({
       items: cardsBasketHTMLArray,
-      total: basketTotal,
+      total: basketTotalPrice,
     })
   });
+});
+
+events.on('cardBasket:selectedChanged', ({ id }: { id: string }) => {
+  catalogData.toggleCardSelected(id);
+
+  events.emit('basket:open');
+});
+
+events.on('inputValue:changed', (data: { field: keyof IUser, value: string }) => {
+  userData.setUserData(data.field, data.value);
+});
+
+events.on('userData:errorsChange', (errors: Partial<IUser>) => {
+  const { payment, address, email, phone } = errors;
+
+  userOrder.valid = !payment && !address;
+  userOrder.errors = Object.values({ payment, address })
+    .filter((i) => !!i)
+    .join(' и ');
+
+  userContacts.valid = !email && !phone;
+  userContacts.errors = Object.values({ email, phone })
+    .filter((i) => !!i)
+    .join(' и ');
 });
 
 events.on('basket:submit', () => {
   modal.render({
     content: userOrder.render({
-      valid: true,
+      valid: false,
       errors: [],
     })
   });
@@ -126,14 +145,10 @@ events.on('basket:submit', () => {
 events.on('order:submit', () => {
   modal.render({
     content: userContacts.render({
-      valid: true,
+      valid: false,
       errors: [],
     })
   })
-});
-
-events.on('userDataChange', (data: { field: keyof IUser, value: string }) => {
-  userData.setUserData(data.field, data.value);
 });
 
 events.on('contacts:submit', () => {
@@ -174,3 +189,7 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
   modal.locked(false);
 });
+
+api.getProductsApi()
+  .then(catalogData.setCards.bind(catalogData))
+  .catch(err => console.error(err));

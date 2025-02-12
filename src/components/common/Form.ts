@@ -32,7 +32,7 @@ export class Form<T> extends Component<IFormState> {
   }
 
   protected onInputChange(field: keyof T, value: string) {
-    this.events.emit(`userDataChange`, { field, value });
+    this.events.emit('inputValue:changed', { field, value });
   }
 
   set valid(value: boolean) {
@@ -45,8 +45,8 @@ export class Form<T> extends Component<IFormState> {
 
   reset() {
     this.container.reset();
-    this.errors = '';
     this.valid = false;
+    this.errors = '';
   }
 
   render(state?: Partial<T> & IFormState) {

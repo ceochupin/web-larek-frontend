@@ -19,7 +19,7 @@ export class Page extends Component<IPage> {
     this.basketCounterElement = ensureElement('.header__basket-counter', this.container) as HTMLElement;
     this.basketButtonElement = ensureElement('.header__basket', this.container) as HTMLButtonElement;
 
-    this.basketButtonElement.addEventListener('click', () => this.events.emit('basket:click'));
+    this.basketButtonElement.addEventListener('click', () => this.events.emit('basket:open'));
   }
 
   set cardsList(items: HTMLElement[]) {

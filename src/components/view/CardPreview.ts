@@ -5,15 +5,11 @@ import { CardCatalog } from "./CardCatalog";
 
 export class CardPreview extends CardCatalog implements TCardPreview {
   protected _description: HTMLElement;
-  protected _button: HTMLButtonElement;
 
   constructor(protected container: HTMLElement, protected events: IEvents) {
     super(container, events);
 
     this._description = ensureElement('.card__text', this.container) as HTMLElement;
-    this._button = ensureElement('.card__button', this.container) as HTMLButtonElement;
-
-    this._button.addEventListener('click', () => this.events.emit('cardPreview:buttonClick', { id: this._id }));
   }
 
   set description(value: string) {
