@@ -15,7 +15,7 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
   }
 
   getCards(): ICardWithSelection[] {
-    return [...this.data.cards];
+    return this.data.cards;
   }
 
   getCard(id: string): ICardWithSelection {
