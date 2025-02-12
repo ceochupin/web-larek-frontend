@@ -31,14 +31,14 @@ export class Modal extends Component<IModal> {
   open() {
     this.toggleClass(this.container, 'modal_active', true);
     document.addEventListener('keyup', this.handleEscUp);
-    this.events.emit('modal:open');
+    this.locked(true);
   }
 
   close() {
     this.toggleClass(this.container, 'modal_active', false);
     document.removeEventListener('keyup', this.handleEscUp);
     this.content = null;
-    this.events.emit('modal:close');
+    this.locked(false);
   }
 
   handleEscUp(evt: KeyboardEvent) {

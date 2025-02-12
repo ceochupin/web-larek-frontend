@@ -25,7 +25,7 @@ export class Card<T> extends Component<T> {
     this._id = value;
   }
 
-  get id() {
+  get id(): string {
     return this._id;
   }
 }
