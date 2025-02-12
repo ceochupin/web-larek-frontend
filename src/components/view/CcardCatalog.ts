@@ -1,7 +1,7 @@
-import { TCardCatalog } from "../../types";
-import { ensureElement } from "../../utils/utils";
-import { IEvents } from "../base/Events";
-import { Card } from "../common/Card";
+import { TCardCatalog } from '../../types';
+import { ensureElement } from '../../utils/utils';
+import { IEvents } from '../base/Eevents';
+import { Card } from '../common/Ccard';
 
 export class CardCatalog extends Card<TCardCatalog> {
   protected _category: HTMLElement;

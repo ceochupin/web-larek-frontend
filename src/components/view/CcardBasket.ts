@@ -1,7 +1,7 @@
-import { TCardBasket } from "../../types";
-import { ensureElement } from "../../utils/utils";
-import { IEvents } from "../base/Events";
-import { Card } from "../common/Card";
+import { TCardBasket } from '../../types';
+import { ensureElement } from '../../utils/utils';
+import { IEvents } from '../base/Eevents';
+import { Card } from '../common/Ccard';
 
 export class CardBasket extends Card<TCardBasket> {
   protected _button: HTMLButtonElement;

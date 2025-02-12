@@ -1,7 +1,7 @@
-import { TUserOrder } from "../../types";
-import { ensureAllElements } from "../../utils/utils";
-import { IEvents } from "../base/Events";
-import { Form } from "../common/Form";
+import { TUserOrder } from '../../types';
+import { ensureAllElements } from '../../utils/utils';
+import { IEvents } from '../base/Eevents';
+import { Form } from '../common/Fform';
 
 export class UserOrder extends Form<TUserOrder> {
   private _buttons: HTMLButtonElement[];

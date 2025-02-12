@@ -1,25 +1,30 @@
-import { ICard, ICardWithSelection, ICatalogData, ICatalogDataState } from "../../types";
-import { IEvents } from "../base/Events";
-import { Model } from "../base/Model";
+import { ICard, ICardWithSelection, ICatalogData, ICatalogDataState } from '../../types';
+import { IEvents } from '../base/Eevents';
+import { Model } from '../base/Mmodel';
 
 export class CatalogData extends Model<ICatalogDataState> implements ICatalogData {
-  constructor(protected data: Partial<ICatalogDataState> = { cards: [] }, protected events: IEvents) {
+  protected cards: ICardWithSelection[] = [];
+  constructor(events: IEvents, data: Partial<ICatalogDataState> = { cards: [] } ) {
     super(data, events);
+
+    if(data.cards) {
+      this.setCards(data.cards);
+    }
   }
 
-  setCards(data: ICard[]) {
-    this.data.cards = data.map(card => ({ ...card, selected: false }));
+  setCards(cardsData: ICard[]) {
+    this.cards = cardsData.map(card => ({ ...card, selected: false }));
 
     this.emitChanges('catalogData:init');
     this.emitChanges('catalogData:changed');
   }
 
   getCards(): ICardWithSelection[] {
-    return this.data.cards;
+    return this.cards;
   }
 
   getCard(id: string): ICardWithSelection {
-    return this.data.cards.find((card) => card.id === id);
+    return this.cards.find((card) => card.id === id);
   }
 
   toggleCardSelected(id: string) {
@@ -29,7 +34,7 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
   }
 
   getSelectedCards(): ICardWithSelection[] {
-    return this.data.cards.filter(card => card.selected);
+    return this.cards.filter(card => card.selected);
   }
 
   getSelectedCardIds(): string[] {
@@ -45,7 +50,7 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
   }
 
   clearSelection() {
-    this.data.cards.forEach(card => card.selected = false);
+    this.cards.forEach(card => card.selected = false);
 
     this.emitChanges('catalogData:changed');
   }

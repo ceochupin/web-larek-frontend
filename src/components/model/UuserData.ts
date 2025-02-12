@@ -1,6 +1,6 @@
-import { IUser, IUserData, IUserDataState } from "../../types";
-import { IEvents } from "../base/Events";
-import { Model } from "../base/Model";
+import { IUser, IUserData, IUserDataState } from '../../types';
+import { IEvents } from '../base/Eevents';
+import { Model } from '../base/Mmodel';
 
 export class UserData extends Model<IUserDataState> implements IUserData {
   constructor(protected errors: Record<string, string> = {}, protected data: Partial<IUserDataState> = { user: {} }, protected events: IEvents) {
