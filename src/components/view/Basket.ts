@@ -1,4 +1,4 @@
-import { ensureElement } from '../../utils/utils';
+import { createElement, ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 
@@ -26,7 +26,9 @@ export class Basket extends Component<IBasket> {
   }
 
   set items(cardsSelected: HTMLElement[]) {
-    this.listElement.replaceChildren(...cardsSelected);
+    (cardsSelected.length)
+      ? this.listElement.replaceChildren(...cardsSelected)
+      : this.listElement.replaceChildren(createElement<HTMLParagraphElement>('p', { textContent: 'Корзина пуста' }));
   }
 
   set total(value: number) {

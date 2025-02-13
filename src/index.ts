@@ -42,10 +42,7 @@ const userOrderTemplate = ensureElement('#order') as HTMLTemplateElement;
 const successTemplate = ensureElement('#success') as HTMLTemplateElement;
 
 const catalogData = new CatalogData(events);
-
-const initialStateUser: IUserDataState = { user: {} };
-const initialErrors: Record<string, string> = {};
-const userData = new UserData(initialErrors, initialStateUser, events);
+const userData = new UserData(events);
 
 const page = new Page(pageContainer, events);
 const modal = new Modal(modalContainer, events);
@@ -75,7 +72,7 @@ events.on('catalogData:changed', () => {
 events.on('cardCatalog:openPreview', ({ id }: { id: string }) => {
   const cardClick = catalogData.getCard(id);
 
-  cardPreview.buttonText = cardClick.selected;
+  cardPreview.buttonText = catalogData.isCardSelected(id);
   cardPreview.buttonState = catalogData.isPriceNotNull(id);
 
   modal.render({
@@ -98,7 +95,7 @@ events.on('basket:open', () => {
 
   const basketTotalPrice = catalogData.getTotalPriceOfSelectedCards();
 
-  basket.buttonState = !!basketTotalPrice;
+  basket.buttonState = catalogData.isCardsSelected();
 
   modal.render({
     content: basket.render({
@@ -151,11 +148,13 @@ events.on('order:submit', () => {
 });
 
 events.on('contacts:submit', () => {
+  const { payment, address, email, phone } = userData.getUserData();
+  
   api.postOrderApi({
-      payment: userData.getPayment(),
-      address: userData.getAddress(),
-      email: userData.getEmail(),
-      phone: userData.getPhone(),
+      payment,
+      address,
+      email,
+      phone,
       total: catalogData.getTotalPriceOfSelectedCards(),
       items: catalogData.getSelectedCardIds(),
   })

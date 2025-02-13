@@ -3,48 +3,38 @@ import { IEvents } from '../base/Events';
 import { Model } from '../base/Model';
 
 export class UserData extends Model<IUserDataState> implements IUserData {
-  constructor(protected errors: Record<string, string> = {}, protected data: Partial<IUserDataState> = { user: {} }, protected events: IEvents) {
+  protected errors: Record<string, string> = {};
+  protected user: IUser;
+  constructor(events: IEvents, data: Partial<IUserDataState> = { user: {} }) {
     super(data, events);
   }
 
   setUserData(field: keyof IUser, value: string): void {
-    this.data.user[field] = value;
+    this.user[field] = value;
 
     this.validateUserData()
   }
 
-  getPayment(): string {
-    return this.data.user.payment;
-  }
-
-  getEmail(): string {
-    return this.data.user.email;
-  }
-
-  getPhone(): string {
-    return this.data.user.phone;
-  }
-
-  getAddress(): string {
-    return this.data.user.address;
+  getUserData(): IUser {
+    return this.user;
   }
 
   protected validateUserData(): void {
     const error: typeof this.errors = {};
 
-    if (!this.data.user.payment) {
+    if (!this.user.payment) {
       error.payment = 'выберите способ оплаты';
     }
 
-    if (!this.data.user.address) {
+    if (!this.user.address) {
       error.address = 'укажите адрес';
     }
 
-    if (!this.data.user.email) {
+    if (!this.user.email) {
       error.email = 'укажите email';
     }
     
-    if (!this.data.user.phone) {
+    if (!this.user.phone) {
       error.phone = 'укажите телефон';
     }
 
@@ -54,7 +44,7 @@ export class UserData extends Model<IUserDataState> implements IUserData {
   }
 
   clearUserData(): void {
-    Object.keys(this.data.user).forEach(field => {
+    Object.keys(this.user).forEach(field => {
       this.setUserData(field as keyof IUser, '');
     });
 

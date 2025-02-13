@@ -34,6 +34,8 @@ export interface ICatalogData {
   getTotalPriceOfSelectedCards(): number;
   clearSelection(): void;
   isPriceNotNull(id: string): boolean;
+  isCardSelected(id: string): boolean;
+  isCardsSelected(): boolean;
 }
 
 export interface IUser {
@@ -49,10 +51,7 @@ export interface IUserDataState {
 
 export interface IUserData {
   setUserData(field: keyof IUser, value: string): void;
-  getPayment(): string;
-  getEmail(): string;
-  getPhone(): string;
-  getAddress(): string;
+  getUserData(): IUser;
   clearUserData(): void;
 }
 

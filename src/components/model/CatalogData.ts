@@ -3,13 +3,9 @@ import { IEvents } from '../base/Events';
 import { Model } from '../base/Model';
 
 export class CatalogData extends Model<ICatalogDataState> implements ICatalogData {
-  protected cards: ICardWithSelection[] = [];
+  protected cards: ICardWithSelection[];
   constructor(events: IEvents, data: Partial<ICatalogDataState> = { cards: [] } ) {
     super(data, events);
-
-    if(data.cards) {
-      this.setCards(data.cards);
-    }
   }
 
   setCards(cardsData: ICard[]) {
@@ -57,5 +53,13 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
 
   isPriceNotNull(id: string): boolean {
     return this.getCard(id).price !== null;
+  }
+
+  isCardSelected(id: string): boolean {
+    return this.getCard(id).selected;
+  }
+
+  isCardsSelected(): boolean {
+    return this.getSelectedCardsCount() > 0;
   }
 }
