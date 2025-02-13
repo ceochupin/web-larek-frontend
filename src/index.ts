@@ -22,7 +22,6 @@ import { UserOrder } from './components/view/UserOrder';
 import { UserContacts } from './components/view/UserContacts';
 import { Success } from './components/view/Success';
 
-
 const events = new EventEmitter();
 
 const baseUrl: IApi = new Api(API_URL);
