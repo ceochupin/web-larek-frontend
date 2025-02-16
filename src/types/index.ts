@@ -16,7 +16,8 @@ export interface ICard {
 }
 
 export interface ICardWithSelection extends ICard {
-  selected: boolean;
+  isBasket: boolean;
+  isSelected: boolean;
 }
 
 export interface ICatalogDataState {
@@ -25,17 +26,18 @@ export interface ICatalogDataState {
 
 export interface ICatalogData {
   setCards(data: ICard[]): void;
+  setCardSelected (id: string): void;
   getCards(): ICardWithSelection[];
   getCard(id: string): ICardWithSelection;
-  toggleCardSelected(id: string): void;
-  getSelectedCards(): ICardWithSelection[];
-  getSelectedCardIds(): string[];
-  getSelectedCardsCount(): number;
-  getTotalPriceOfSelectedCards(): number;
-  clearSelection(): void;
+  toggleCardInBasket(id: string): void;
+  getCardsBasket(): ICardWithSelection[];
+  getCardIdsBasket(): string[];
+  getCountBasket(): number;
+  getTotalPriceInBasket(): number;
+  clearPropsCatalogData(): void;
   isPriceNotNull(id: string): boolean;
-  isCardSelected(id: string): boolean;
-  isCardsSelected(): boolean;
+  isCardInBasket(id: string): boolean;
+  isBasketNotEmpty(): boolean;
 }
 
 export interface IUser {

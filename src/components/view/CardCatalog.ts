@@ -24,9 +24,9 @@ export class CardCatalog extends Card<TCardCatalog> {
     this._button = this.container.querySelector('.card__button') as HTMLButtonElement;
 
     if (this._button) {
-      this._button.addEventListener('click', () => this.events.emit('cardPreview:selectedChanged', { id: this._id }));
+      this._button.addEventListener('click', () => this.events.emit('cardPreviewView:clickButton', { id: this._id }));
     } else {
-      this.container.addEventListener('click', () => this.events.emit('cardCatalog:openPreview', { id: this._id }));
+      this.container.addEventListener('click', () => this.events.emit('cardCatalogView:clickCard', { id: this._id }));
     }
   }
 

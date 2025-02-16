@@ -40,7 +40,7 @@ export class UserData extends Model<IUserDataState> implements IUserData {
 
     this.errors = error;
 
-    this.events.emit('userData:errorsChange', this.errors);
+    this.events.emit('userDataModel:errorsChange', this.errors);
   }
 
   clearUserData(): void {
@@ -48,6 +48,6 @@ export class UserData extends Model<IUserDataState> implements IUserData {
       this.setUserData(field as keyof IUser, '');
     });
 
-    this.emitChanges('userData:clear');
+    this.emitChanges('userDataModel:clear');
   }
 }

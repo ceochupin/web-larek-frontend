@@ -52,70 +52,77 @@ const userOrder = new UserOrder(cloneTemplate(userOrderTemplate), events);
 const userContacts = new UserContacts(cloneTemplate(userContactsTemplate), events);
 const success = new Success(cloneTemplate(successTemplate), events);
 
-events.on('catalogData:init', () => {
+events.on('catalogDataModel:changed', () => {
   const cardsHTMLArray = catalogData.getCards().map(item => 
     new CardCatalog(cloneTemplate(cardCatalogTemplate), events).render(item));
 
-  page.render({
-    cardsList: cardsHTMLArray
-  })
-});
-
-events.on('catalogData:changed', () => {
-  const basketCountTotal = catalogData.getSelectedCardsCount();
+  const basketCountTotal = catalogData.getCountBasket();
 
   page.render({
+    cardsList: cardsHTMLArray,
     basketCounter: basketCountTotal,
-  })
-});
-
-events.on('cardCatalog:openPreview', ({ id }: { id: string }) => {
-  const cardClick = catalogData.getCard(id);
-
-  cardPreview.buttonText = catalogData.isCardSelected(id);
-  cardPreview.buttonState = catalogData.isPriceNotNull(id);
-
-  modal.render({
-    content: cardPreview.render(cardClick)
   });
 });
 
-events.on('cardPreview:selectedChanged', ({ id }: { id: string }) => {
-  catalogData.toggleCardSelected(id);
+events.on('catalogDataModel:basketChanged', () => {
+  const basketCountTotal = catalogData.getCountBasket();
 
-  events.emit('cardCatalog:openPreview', { id });
-});
+  page.render({
+    basketCounter: basketCountTotal,
+  });
 
-events.on('basket:open', () => {
-  const cardsBasketHTMLArray = catalogData.getSelectedCards().map((item, index) => {
+  const cardsBasketHTMLArray = catalogData.getCardsBasket().map((item, index) => {
     const cardBasket = new CardBasket(cloneTemplate(cardBasketTemplate), events);
     cardBasket.index = ++index;
     return cardBasket.render(item);
   });
 
-  const basketTotalPrice = catalogData.getTotalPriceOfSelectedCards();
+  const basketTotalPrice = catalogData.getTotalPriceInBasket();
 
-  basket.buttonState = catalogData.isCardsSelected();
+  basket.buttonState = catalogData.isBasketNotEmpty();
 
-  modal.render({
-    content: basket.render({
-      items: cardsBasketHTMLArray,
-      total: basketTotalPrice,
-    })
+  basket.render({
+    items: cardsBasketHTMLArray,
+    total: basketTotalPrice,
   });
 });
 
-events.on('cardBasket:selectedChanged', ({ id }: { id: string }) => {
-  catalogData.toggleCardSelected(id);
+events.on('cardCatalogView:clickCard', ({ id }: { id: string }) => {
+  catalogData.setCardSelected(id);
 
-  events.emit('basket:open');
+  modal.render({
+    content: cardPreview.render(catalogData.getCard(id)),
+  });
 });
 
-events.on('inputValue:changed', (data: { field: keyof IUser, value: string }) => {
+events.on('catalogDataModel:selectedChanged', ({ id }: { id: string }) => {
+  const cardClick = catalogData.getCard(id);
+
+  cardPreview.buttonText = catalogData.isCardInBasket(id);
+  cardPreview.buttonState = catalogData.isPriceNotNull(id);
+
+  cardPreview.render(cardClick);
+});
+
+events.on('cardPreviewView:clickButton', ({ id }: { id: string }) => {
+  catalogData.toggleCardInBasket(id);
+});
+
+events.on('pageVeiw:basketClick', () => {
+  modal.render({
+    content: basket.render(),
+  });
+});
+
+events.on('cardBasketView:clickDeleteButton', ({ id }: { id: string }) => {
+  catalogData.toggleCardInBasket(id);
+});
+
+events.on('formInputValue:changed', (data: { field: keyof IUser, value: string }) => {
   userData.setUserData(data.field, data.value);
 });
 
-events.on('userData:errorsChange', (errors: Partial<IUser>) => {
+events.on('userDataModel:errorsChange', (errors: Partial<IUser>) => {
   const { payment, address, email, phone } = errors;
 
   userOrder.valid = !payment && !address;
@@ -129,7 +136,7 @@ events.on('userData:errorsChange', (errors: Partial<IUser>) => {
     .join(' и ');
 });
 
-events.on('basket:submit', () => {
+events.on('basketView:submit', () => {
   modal.render({
     content: userOrder.render({
       valid: false,
@@ -138,7 +145,7 @@ events.on('basket:submit', () => {
   });
 });
 
-events.on('order:submit', () => {
+events.on('orderView:submit', () => {
   modal.render({
     content: userContacts.render({
       valid: false,
@@ -147,7 +154,7 @@ events.on('order:submit', () => {
   })
 });
 
-events.on('contacts:submit', () => {
+events.on('contactsView:submit', () => {
   const { payment, address, email, phone } = userData.getUserData();
   
   api.postOrderApi({
@@ -155,8 +162,8 @@ events.on('contacts:submit', () => {
       address,
       email,
       phone,
-      total: catalogData.getTotalPriceOfSelectedCards(),
-      items: catalogData.getSelectedCardIds(),
+      total: catalogData.getTotalPriceInBasket(),
+      items: catalogData.getCardIdsBasket(),
   })
   .then((res) => {
       modal.render({
@@ -165,18 +172,18 @@ events.on('contacts:submit', () => {
         })
       });
 
-      catalogData.clearSelection();
+      catalogData.clearPropsCatalogData();
       userData.clearUserData();
   })
   .catch(err => console.error(err));
 });
 
-events.on('userData:clear', () => {
+events.on('userDataModel:clear', () => {
   userOrder.reset();
   userContacts.reset();
 });
 
-events.on('success:close', () => {
+events.on('successView:close', () => {
   modal.close();
 });
 

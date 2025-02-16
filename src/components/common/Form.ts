@@ -28,11 +28,11 @@ export class Form<T> extends Component<IFormState> {
 
   protected handleSubmit = (event: Event) => {
     event.preventDefault();
-    this.events.emit(`${this.container.name}:submit`);
+    this.events.emit(`${this.container.name}View:submit`);
   }
 
   protected onInputChange(field: keyof T, value: string) {
-    this.events.emit('inputValue:changed', { field, value });
+    this.events.emit('formInputValue:changed', { field, value });
   }
 
   set valid(value: boolean) {

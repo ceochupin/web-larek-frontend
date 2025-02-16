@@ -8,11 +8,21 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
     super(data, events);
   }
 
-  setCards(cardsData: ICard[]) {
-    this.cards = cardsData.map(card => ({ ...card, selected: false }));
+  setCards(cardsData: ICard[]): void {
+    this.cards = cardsData.map(card => ({
+      ...card,
+      isBasket: false,
+      isSelected: false
+    }));
 
-    this.emitChanges('catalogData:init');
-    this.emitChanges('catalogData:changed');
+    this.emitChanges('catalogDataModel:changed');
+  }
+
+  setCardSelected (id: string): void {
+    this.cards.forEach(card => card.isSelected = false);
+    this.getCard(id).isSelected = true;
+
+    this.emitChanges('catalogDataModel:selectedChanged', { id });
   }
 
   getCards(): ICardWithSelection[] {
@@ -23,43 +33,50 @@ export class CatalogData extends Model<ICatalogDataState> implements ICatalogDat
     return this.cards.find((card) => card.id === id);
   }
 
-  toggleCardSelected(id: string) {
-    this.getCard(id).selected = !this.getCard(id).selected;
+  toggleCardInBasket(id: string): void {
+    this.getCard(id).isBasket = !this.getCard(id).isBasket;
 
-    this.emitChanges('catalogData:changed');
+    this.emitChanges('catalogDataModel:basketChanged');
+
+    if (this.getCard(id).isSelected) {
+      this.emitChanges('catalogDataModel:selectedChanged', { id });
+    }
   }
 
-  getSelectedCards(): ICardWithSelection[] {
-    return this.cards.filter(card => card.selected);
+  getCardsBasket(): ICardWithSelection[] {
+    return this.cards.filter(card => card.isBasket);
   }
 
-  getSelectedCardIds(): string[] {
-    return this.getSelectedCards().map(card => card.id);
+  getCardIdsBasket(): string[] {
+    return this.getCardsBasket().map(card => card.id);
   }
 
-  getSelectedCardsCount(): number {
-    return this.getSelectedCards().length;
+  getCountBasket(): number {
+    return this.getCardsBasket().length;
   }
 
-  getTotalPriceOfSelectedCards(): number {
-    return this.getSelectedCards().reduce((acc, card) => acc + card.price, 0);
+  getTotalPriceInBasket(): number {
+    return this.getCardsBasket().reduce((acc, card) => acc + card.price, 0);
   }
 
-  clearSelection() {
-    this.cards.forEach(card => card.selected = false);
+  clearPropsCatalogData(): void {
+    this.cards.forEach(card => {
+      card.isBasket = false,
+      card.isSelected = false
+    });
 
-    this.emitChanges('catalogData:changed');
+    this.emitChanges('catalogDataModel:changed');
   }
 
   isPriceNotNull(id: string): boolean {
     return this.getCard(id).price !== null;
   }
 
-  isCardSelected(id: string): boolean {
-    return this.getCard(id).selected;
+  isCardInBasket(id: string): boolean {
+    return this.getCard(id).isBasket;
   }
 
-  isCardsSelected(): boolean {
-    return this.getSelectedCardsCount() > 0;
+  isBasketNotEmpty(): boolean {
+    return !!this.getCountBasket();
   }
 }
