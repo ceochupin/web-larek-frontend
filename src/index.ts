@@ -91,7 +91,7 @@ events.on('cardCatalogView:clickCard', ({ id }: { id: string }) => {
   catalogData.setCardSelected(id);
 
   modal.render({
-    content: cardPreview.render(catalogData.getCard(id)),
+    content: cardPreview.render(),
   });
 });
 
