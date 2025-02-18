@@ -5,7 +5,7 @@ import { IEvents } from '../base/Events';
 interface IPage {
   cardsList: HTMLElement[];
   basketCounter: number;
-}
+};
 
 export class Page extends Component<IPage> {
   protected cardsContainer: HTMLElement;
@@ -20,13 +20,13 @@ export class Page extends Component<IPage> {
     this.basketButtonElement = ensureElement('.header__basket', this.container) as HTMLButtonElement;
 
     this.basketButtonElement.addEventListener('click', () => this.events.emit('pageVeiw:basketClick'));
-  }
+  };
 
   set cardsList(items: HTMLElement[]) {
     this.cardsContainer.replaceChildren(...items);
-  }
+  };
 
   set basketCounter(value: number) {
     this.setText(this.basketCounterElement, value.toString());
-  }
-}
+  };
+};

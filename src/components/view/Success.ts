@@ -13,9 +13,9 @@ export class Success extends Component<IOrderSuccess> {
     this.button = ensureElement('.order-success__close', this.container) as HTMLButtonElement;
 
     this.button.addEventListener('click', () => this.events.emit('successView:close'));
-  }
+  };
 
   set total(value: number) {
     this.setText(this._total, `Списано ${value} синапсов`);
-  }
-}
+  };
+};

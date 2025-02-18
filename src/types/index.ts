@@ -4,7 +4,7 @@ export interface IApi {
   baseUrl: string;
   get<T>(uri: string): Promise<T>;
   post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
-}
+};
 
 export interface ICard {
   id: string;
@@ -13,16 +13,16 @@ export interface ICard {
   title: string;
   category: string;
   price: number | null;
-}
+};
 
 export interface ICardWithSelection extends ICard {
   isBasket: boolean;
   isSelected: boolean;
-}
+};
 
 export interface ICatalogDataState {
   cards: ICardWithSelection[];
-}
+};
 
 export interface ICatalogData {
   setCards(data: ICard[]): void;
@@ -38,29 +38,30 @@ export interface ICatalogData {
   isPriceNotNull(id: string): boolean;
   isCardInBasket(id: string): boolean;
   isBasketNotEmpty(): boolean;
-}
+};
 
 export interface IUser {
   payment?: string;
   email?: string;
   phone?: string;
   address?: string;
-}
+};
 
 export interface IUserDataState {
   user: IUser;
-}
+  errors: Partial<Record<keyof IUser, string>>;
+};
 
 export interface IUserData {
   setUserData(field: keyof IUser, value: string): void;
   getUserData(): IUser;
   clearUserData(): void;
-}
+};
 
 export interface IOrder extends IUser {
   total: number;
   items: string[];
-}
+};
 
 export type TCardCatalog = Omit<ICard, 'id' | 'description'>;
 export type TCardPreview = Omit<ICard, 'id'>;
@@ -72,4 +73,4 @@ export type TUserContacts = Pick<IUser, 'phone' | 'email'>;
 export interface IOrderSuccess {
   id: string;
   total: number;
-}
+};

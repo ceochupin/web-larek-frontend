@@ -4,7 +4,7 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { EventEmitter } from './components/base/Events';
 import { API_URL, CDN_URL } from './utils/constants';
 import { Api } from './components/base/Api';
-import { IApi, IUser, IUserDataState } from './types';
+import { IApi, IUser, TUserContacts, TUserOrder } from './types';
 import { WebLarekApi } from './components/connector/WebLarekApi';
 
 import { CatalogData } from './components/model/CatalogData';
@@ -21,6 +21,7 @@ import { UserData } from './components/model/UserData';
 import { UserOrder } from './components/view/UserOrder';
 import { UserContacts } from './components/view/UserContacts';
 import { Success } from './components/view/Success';
+import { IFormState } from './components/common/Form';
 
 const events = new EventEmitter();
 
@@ -54,36 +55,30 @@ const success = new Success(cloneTemplate(successTemplate), events);
 
 events.on('catalogDataModel:changed', () => {
   const cardsHTMLArray = catalogData.getCards().map(item => 
-    new CardCatalog(cloneTemplate(cardCatalogTemplate), events).render(item));
-
-  const basketCountTotal = catalogData.getCountBasket();
+    new CardCatalog(cloneTemplate(cardCatalogTemplate), events)
+      .render(item)
+  );
 
   page.render({
     cardsList: cardsHTMLArray,
-    basketCounter: basketCountTotal,
   });
 });
 
 events.on('catalogDataModel:basketChanged', () => {
-  const basketCountTotal = catalogData.getCountBasket();
-
   page.render({
-    basketCounter: basketCountTotal,
+    basketCounter: catalogData.getCountBasket(),
   });
 
-  const cardsBasketHTMLArray = catalogData.getCardsBasket().map((item, index) => {
-    const cardBasket = new CardBasket(cloneTemplate(cardBasketTemplate), events);
-    cardBasket.index = ++index;
-    return cardBasket.render(item);
-  });
-
-  const basketTotalPrice = catalogData.getTotalPriceInBasket();
-
-  basket.buttonState = catalogData.isBasketNotEmpty();
+  const cardsBasketHTMLArray = catalogData.getCardsBasket().map((item, index) =>
+    new CardBasket(cloneTemplate(cardBasketTemplate), events)
+      .setIndex(index + 1)
+      .render(item)
+  );
 
   basket.render({
     items: cardsBasketHTMLArray,
-    total: basketTotalPrice,
+    total: catalogData.getTotalPriceInBasket(),
+    buttonState: catalogData.isBasketNotEmpty(),
   });
 });
 
@@ -96,12 +91,9 @@ events.on('cardCatalogView:clickCard', ({ id }: { id: string }) => {
 });
 
 events.on('catalogDataModel:selectedChanged', ({ id }: { id: string }) => {
-  const cardClick = catalogData.getCard(id);
-
-  cardPreview.buttonText = catalogData.isCardInBasket(id);
-  cardPreview.buttonState = catalogData.isPriceNotNull(id);
-
-  cardPreview.render(cardClick);
+  cardPreview.setButtonText(catalogData.isCardInBasket(id));
+  cardPreview.setButtonState(catalogData.isPriceNotNull(id));
+  cardPreview.render(catalogData.getCard(id));
 });
 
 events.on('cardPreviewView:clickButton', ({ id }: { id: string }) => {
@@ -118,38 +110,70 @@ events.on('cardBasketView:clickDeleteButton', ({ id }: { id: string }) => {
   catalogData.toggleCardInBasket(id);
 });
 
-events.on('formInputValue:changed', (data: { field: keyof IUser, value: string }) => {
+events.on('formFieldValue:changed', (data: { field: keyof IUser, value: string }) => {
   userData.setUserData(data.field, data.value);
 });
 
-events.on('userDataModel:errorsChange', (errors: Partial<IUser>) => {
-  const { payment, address, email, phone } = errors;
+events.on('userDataModel:changed', (errors: Partial<Record<keyof IUser, string>>) => {
+  const formFieldsOrder: Array<keyof TUserOrder> = ['payment', 'address'];
+  const formFieldsContacts: Array<keyof TUserContacts> = ['email', 'phone'];
 
-  userOrder.valid = !payment && !address;
-  userOrder.errors = Object.values({ payment, address })
-    .filter((i) => !!i)
+  userOrder.valid = userData.validateFields(formFieldsOrder);
+  userOrder.errors = userData.getErrorFields(formFieldsOrder)
+    .filter(Boolean)
     .join(' и ');
 
-  userContacts.valid = !email && !phone;
-  userContacts.errors = Object.values({ email, phone })
-    .filter((i) => !!i)
-    .join(' и ');
+  userContacts.valid = userData.validateFields(formFieldsContacts);
+  userContacts.errors = userData.getErrorFields(formFieldsContacts)
+  .filter(Boolean)
+  .join(' и ');
 });
 
-events.on('basketView:submit', () => {
+events.on('basketView:clickOrderButton', () => {
   modal.render({
-    content: userOrder.render({
-      valid: false,
-      errors: [],
-    })
+    content: userOrder.render(userData.getUserData() as TUserOrder & IFormState)
   });
 });
 
+// events.on('userDataModel:errorsChange', (errors: Partial<IUser>) => {
+//   const { payment, address, email, phone } = errors;
+
+//   userOrder.valid = !payment && !address;
+//   userOrder.errors = Object.values({ payment, address })
+//     .filter((i) => !!i)
+//     .join(' и ');
+
+//   userContacts.valid = !email && !phone;
+//   userContacts.errors = Object.values({ email, phone })
+//     .filter((i) => !!i)
+//     .join(' и ');
+// });
+
+// events.on('basketView:clickOrderButton', () => {
+//   const { payment, address } = userData.getErrors();
+//   const errors = Object.values({ payment, address })
+//     .filter((i) => !!i)
+//     .join(' и ');
+
+//   modal.render({
+//     content: userOrder.render({
+//       valid: !payment && !address,
+//       errors: errors,
+//     })
+//   });
+// });
+
+
 events.on('orderView:submit', () => {
+  const { email, phone } = userData.getErrors();
+  const errors = Object.values({ email, phone })
+    .filter((i) => !!i)
+    .join(' и ');
+
   modal.render({
     content: userContacts.render({
-      valid: false,
-      errors: [],
+      valid: !email && !phone,
+      errors: errors,
     })
   })
 });
@@ -178,10 +202,10 @@ events.on('contactsView:submit', () => {
   .catch(err => console.error(err));
 });
 
-events.on('userDataModel:clear', () => {
-  userOrder.reset();
-  userContacts.reset();
-});
+// events.on('userDataModel:clear', () => {
+//   userOrder.reset();
+//   userContacts.reset();
+// });
 
 events.on('successView:close', () => {
   modal.close();

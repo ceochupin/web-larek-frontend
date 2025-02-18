@@ -14,7 +14,7 @@ export class CardCatalog extends Card<TCardCatalog> {
     'дополнительное': 'card__category_additional',
     'кнопка': 'card__category_button',
     'хард-скил': 'card__category_hard',
-	} as Record<string, string>
+	} as Record<string, string>;
 
   constructor(protected container: HTMLElement, protected events: IEvents) {
     super(container);
@@ -27,15 +27,15 @@ export class CardCatalog extends Card<TCardCatalog> {
       this._button.addEventListener('click', () => this.events.emit('cardPreviewView:clickButton', { id: this._id }));
     } else {
       this.container.addEventListener('click', () => this.events.emit('cardCatalogView:clickCard', { id: this._id }));
-    }
-  }
+    };
+  };
 
   set category(value: string) {
     this.setText(this._category, value);
     this.toggleClass(this._category, this.categoryValue[value], true);
-  }
+  };
 
   set image(value: string) {
     this.setImage(this._image, value);
-  }
-}
+  };
+};

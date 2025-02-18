@@ -2,9 +2,9 @@ import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 
-interface IFormState {
+export interface IFormState {
   valid: boolean;
-  errors: string[];
+  errors: string;
 }
 
 export class Form<T> extends Component<IFormState> {
@@ -23,35 +23,35 @@ export class Form<T> extends Component<IFormState> {
 
   protected handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    this.onInputChange(target.name as keyof T, target.value);
+    const field = target.name as keyof T;
+    const value = target.value;
+
+    this.onInputChange(field, value);
+  }
+
+  protected onInputChange(field: keyof T, value: string) {
+    this.events.emit('formFieldValue:changed', {
+      field,
+      value
+    });
   }
 
   protected handleSubmit = (event: Event) => {
     event.preventDefault();
-    this.events.emit(`${this.container.name}View:submit`);
+    this.events.emit(`${this.container.name}:submit`);
   }
 
-  protected onInputChange(field: keyof T, value: string) {
-    this.events.emit('formInputValue:changed', { field, value });
-  }
-
-  set valid(value: boolean) {
-    this.setDisabled(this.submit, !value);
+  set valid(isValid: boolean) {
+    this.setDisabled(this.submit, !isValid);
   }
 
   set errors(value: string) {
     this.setText(this._errors, value);
   }
 
-  reset() {
-    this.container.reset();
-    this.valid = false;
-    this.errors = '';
-  }
-
-  render(state?: Partial<T> & IFormState) {
-    const { valid, errors, ...inputs } = state;
-    super.render({ valid, errors });
+  render(state: Partial<T> & IFormState) {
+    const {valid, errors, ...inputs} = state;
+    super.render({valid, errors});
     Object.assign(this, inputs);
     return this.container;
   }

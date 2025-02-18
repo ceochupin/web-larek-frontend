@@ -10,17 +10,17 @@ export class CardPreview extends CardCatalog implements TCardPreview {
     super(container, events);
 
     this._description = ensureElement('.card__text', this.container) as HTMLElement;
-  }
+  };
 
   set description(value: string) {
     this.setText(this._description, value);
-  }
+  };
 
-  set buttonText(value: boolean) {
+  setButtonText(value: boolean) {
     this.setText(this._button, value ? `Убрать` : `В корзину`);
-  }
+  };
 
-  set buttonState(value: boolean) {
+  setButtonState(value: boolean) {
     this.setDisabled(this._button, !value);
-  }
-}
+  };
+};

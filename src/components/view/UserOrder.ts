@@ -1,35 +1,32 @@
 import { TUserOrder } from '../../types';
 import { ensureAllElements } from '../../utils/utils';
 import { IEvents } from '../base/Events';
-import { Form } from '../common/Form';
+import { Form, IFormState } from '../common/Form';
 
 export class UserOrder extends Form<TUserOrder> {
-  private _buttons: HTMLButtonElement[];
+  protected paymentButtons: HTMLButtonElement[];
 
-  constructor(protected container: HTMLFormElement, protected events: IEvents) {
+  constructor(container: HTMLFormElement, events: IEvents) {
     super(container, events);
 
-    this._buttons = ensureAllElements(`.button_alt`, this.container) as HTMLButtonElement[];
-    this._buttons.forEach(button => 
-      button.addEventListener('click', () => this.setPayment(button.name))
-    );
+    this.paymentButtons = ensureAllElements(`.button_alt`, this.container) as HTMLButtonElement[];
+
+    this.paymentButtons.forEach(button => {
+      button.addEventListener('click', () => this.handlePaymentClick(button.name));
+    });
   }
 
-  protected setPayment = (name: string) => {
-    this._buttons.forEach(button => 
-      this.toggleClass(button, 'button_alt-active', button.name === name)
-    );
-    this.onInputChange('payment', name);
+  protected handlePaymentClick(payment: string): void {
+    this.onInputChange('payment', payment);
   }
 
-  protected clearPayment = () => {
-    this._buttons.forEach(button => 
-      this.toggleClass(button, 'button_alt-active', false)
-    );
+  set payment(value: string) {
+    this.paymentButtons.forEach((button) => {
+      this.toggleClass(button, 'button_alt-active', button.name === value);
+    });
   }
 
-  reset() {
-    super.reset();
-    this.clearPayment();
+  set address(value: string) {
+    (this.container.elements.namedItem('address') as HTMLInputElement).value = value;
   }
 }
