@@ -49,7 +49,6 @@ export interface IUser {
 
 export interface IUserDataState {
   user: IUser;
-  errors: Partial<Record<keyof IUser, string>>;
 };
 
 export interface IUserData {

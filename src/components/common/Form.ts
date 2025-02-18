@@ -38,7 +38,7 @@ export class Form<T> extends Component<IFormState> {
 
   protected handleSubmit = (event: Event) => {
     event.preventDefault();
-    this.events.emit(`${this.container.name}:submit`);
+    this.events.emit(`${this.container.name}View:submit`);
   }
 
   set valid(isValid: boolean) {

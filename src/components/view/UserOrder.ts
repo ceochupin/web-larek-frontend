@@ -21,6 +21,7 @@ export class UserOrder extends Form<TUserOrder> {
   }
 
   set payment(value: string) {
+    console.log(value);
     this.paymentButtons.forEach((button) => {
       this.toggleClass(button, 'button_alt-active', button.name === value);
     });

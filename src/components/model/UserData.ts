@@ -74,66 +74,52 @@ import { Model } from '../base/Model';
 // };
 
 
-export class UserData extends Model<IUserDataState> {
-  protected user: IUser = {
-    payment: '',
-    address: '',
-    email: '',
-    phone: '',
-  };
+export class UserData extends Model<IUserDataState> implements IUserData {
+  protected user: IUser;
 
-  protected errors: Partial<Record<keyof IUser, string>> = {
-    payment: '',
-    address: '',
-    email: '',
-    phone: '',
-  };
+  protected fieldValue = {
+    payment: 'способ оплаты',
+    address: 'адрес',
+    email: 'email',
+    phone: 'телефон',
+  }
 
-  constructor(events: IEvents, data: Partial<IUserDataState> = { user: {}, errors: {} } ) {
+  constructor(events: IEvents, data: Partial<IUserDataState> = { user: {} } ) {
     super(data, events);
 
-    this.user = { ...this.user, ...data.user };
-    this.errors = { ...this.errors, ...data.errors };
+    this.user = {
+      payment: '',
+      address: '',
+      email: '',
+      phone: '',
+      ...data.user
+    };
   }
 
   setUserData(field: keyof IUser, value: string): void {
     this.user[field] = value;
 
     this.validateField(field);
-    this.emitChanges('userDataModel:change', { field, value });
+    this.emitChanges('userDataModel:changed', this.user);
+
+    console.log(this.user);
   }
 
   getUserData(): IUser {
     return this.user;
   }
 
-  getErrors(): Partial<Record<keyof IUser, string>> {
-    return this.errors;
+  protected validateField(field: keyof IUser): string {
+    return !this.user[field] ? `укажите ${this.fieldValue[field]}` : '';
   }
 
-  protected validateField(field: keyof IUser): void {
-    const error = !this.user[field] ? `Поле ${field} обязательно для заполнения` : '';
-    this.errors[field] = error;
-    this.emitChanges('userDataModel:validateField', { field, error });
-  }
-
-  validateFields(fields: (keyof IUser)[]): boolean {
-    fields.forEach(this.validateField.bind(this));
-
-    return !fields.some(field => this.errors[field]);
-  }
-
-  getErrorFields(fields: (keyof IUser)[]): string[] {
-    return fields.map(field => this.errors[field]);
+  validateFields(fields: (keyof IUser)[]): string[] {
+    return fields.map(field => this.validateField(field)).filter(Boolean);
   }
 
   clearUserData(): void {
     Object.keys(this.user).forEach((field) => {
       this.setUserData(field as keyof IUser, '');
     });
-    Object.keys(this.errors).forEach((field) => {
-      this.errors[field as keyof IUser] = '';
-    });
-    this.emitChanges('userDataModel:clear');
   }
 }

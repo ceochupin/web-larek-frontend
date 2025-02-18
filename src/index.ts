@@ -114,78 +114,61 @@ events.on('formFieldValue:changed', (data: { field: keyof IUser, value: string }
   userData.setUserData(data.field, data.value);
 });
 
-events.on('userDataModel:changed', (errors: Partial<Record<keyof IUser, string>>) => {
-  const formFieldsOrder: Array<keyof TUserOrder> = ['payment', 'address'];
-  const formFieldsContacts: Array<keyof TUserContacts> = ['email', 'phone'];
+events.on('userDataModel:changed', ( user: IUser) => {
+  const { payment, address, email, phone } = user;
 
-  userOrder.valid = userData.validateFields(formFieldsOrder);
-  userOrder.errors = userData.getErrorFields(formFieldsOrder)
-    .filter(Boolean)
-    .join(' и ');
+  userOrder.render({
+    payment,
+    address,
+    valid: userData.validateFields(['payment', 'address']).length === 0,
+    errors: userData.validateFields(['payment', 'address']).join(' и '),
+  });
 
-  userContacts.valid = userData.validateFields(formFieldsContacts);
-  userContacts.errors = userData.getErrorFields(formFieldsContacts)
-  .filter(Boolean)
-  .join(' и ');
-});
-
-events.on('basketView:clickOrderButton', () => {
-  modal.render({
-    content: userOrder.render(userData.getUserData() as TUserOrder & IFormState)
+  userContacts.render({
+    email,
+    phone,
+    valid: userData.validateFields(['email', 'phone']).length === 0,
+    errors: userData.validateFields(['email', 'phone']).join(' и '),
   });
 });
 
-// events.on('userDataModel:errorsChange', (errors: Partial<IUser>) => {
-//   const { payment, address, email, phone } = errors;
+events.on('basketView:submit', () => {
+  const formFieldsOrder: Array<keyof TUserOrder> = ['payment', 'address'];
+  const formErrorsArray = userData.validateFields(formFieldsOrder);
 
-//   userOrder.valid = !payment && !address;
-//   userOrder.errors = Object.values({ payment, address })
-//     .filter((i) => !!i)
-//     .join(' и ');
+  const formErrors: string = (
+    formErrorsArray.length === 0 ||
+    formErrorsArray.length === formFieldsOrder.length
+  ) ? '' : formErrorsArray.join(' и ');
 
-//   userContacts.valid = !email && !phone;
-//   userContacts.errors = Object.values({ email, phone })
-//     .filter((i) => !!i)
-//     .join(' и ');
-// });
-
-// events.on('basketView:clickOrderButton', () => {
-//   const { payment, address } = userData.getErrors();
-//   const errors = Object.values({ payment, address })
-//     .filter((i) => !!i)
-//     .join(' и ');
-
-//   modal.render({
-//     content: userOrder.render({
-//       valid: !payment && !address,
-//       errors: errors,
-//     })
-//   });
-// });
-
+  modal.render({
+    content: userOrder.render({
+      valid: formErrorsArray.length === 0,
+      errors: formErrors
+    })
+  });
+});
 
 events.on('orderView:submit', () => {
-  const { email, phone } = userData.getErrors();
-  const errors = Object.values({ email, phone })
-    .filter((i) => !!i)
-    .join(' и ');
+  const formFieldsContacts: Array<keyof TUserContacts> = ['email', 'phone'];
+  const formErrorsArray = userData.validateFields(formFieldsContacts);
+
+  const formErrors: string = (
+    formErrorsArray.length === 0 ||
+    formErrorsArray.length === formFieldsContacts.length
+  ) ? '' : formErrorsArray.join(' и ');
 
   modal.render({
     content: userContacts.render({
-      valid: !email && !phone,
-      errors: errors,
+      valid: formErrorsArray.length === 0,
+      errors: formErrors
     })
-  })
+  });
 });
 
 events.on('contactsView:submit', () => {
-  const { payment, address, email, phone } = userData.getUserData();
-  
   api.postOrderApi({
-      payment,
-      address,
-      email,
-      phone,
+      ...userData.getUserData(),
       total: catalogData.getTotalPriceInBasket(),
       items: catalogData.getCardIdsBasket(),
   })
@@ -201,11 +184,6 @@ events.on('contactsView:submit', () => {
   })
   .catch(err => console.error(err));
 });
-
-// events.on('userDataModel:clear', () => {
-//   userOrder.reset();
-//   userContacts.reset();
-// });
 
 events.on('successView:close', () => {
   modal.close();
